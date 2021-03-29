@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+    <title>Book Flight</title>
+</head>
+<body>
+    <div class="container">
+        <div class="signup-content">
+            <div class="signup-form">
+                <h2 class="form-title">Search Flight</h2>
+                <form method="POST" class="register-form" id="register-form" autocomplete="off">
+                    <div class="form-group">
+                        <label for="dept"></label>
+                        <input type="text" name="dept" id="dept" placeholder="From"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="arr"></label>
+                        <input type="text" name="arr" id="arr" placeholder="To"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="date"></label>
+                        <input type="date" name="date" id="date" placeholder="Date"/>
+                    </div>
+                    <div class="form-group">
+                        <label for="pcount"></label>
+                        <input type="number" name="pcount" id="pcount" placeholder="Number of adults"/>
+                    </div>
+                    <div class="form-group form-button">
+                        <input type="submit" name="signup" id="signup" class="form-submit" value="Search"/>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+<%- include('partials/footer') %>
