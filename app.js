@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 var flightsfound;
-var flight_tmp, seat_tmp, pcount;
+var flight_id_tmp, seat_tmp, pcount;
 var pname=[], pgender=[];
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
@@ -132,7 +132,7 @@ app.get("/flights", function(req, res){
 
 app.post("/flights", function(req, res){
     // const query = "SELECT ac.capacity FROM fleet ac, flight f WHERE f.aircraft_id=ac.aircraft_id AND f.flight_id=" + req.body.flightno + ";";
-    flight_tmp = req.body.flightno;
+    flight_id_tmp = req.body.flightno;
     res.redirect("seat");
 });
 
@@ -152,95 +152,37 @@ app.get("/pdetails", function(req, res){
 app.post("/pdetails", function(req, res){
     pname = req.body.name;
     pgender = req.body.gender;
-    res.redirect("test");
-        console.log(pname);
-        console.log(pgender);
-});
-
-app.get("/test", function(req, res){
-    const select_booking_id = "SELECT booking_id FROM booking;";
-    const select_ticket_id = "SELECT ticket_id FROM ticket;";
-    const select_passenger_id = "SELECT passenger_id FROM passenger;";
-    var bookingids=[],ticketids=[],passengerids=[];
     var booking_id_tmp, user_id=1;
-    var ticket_id_tmp=[];
-    var passenger_id_tmp=[];
-    var insticket = "INSERT INTO ticket values";
+    var ticket_id_tmp;
+    var passenger_id_tmp;
     var inspassenger = "INSERT INTO passenger values";
-    // var inspassenger = "INSERT INTO passenger values(" + passenger_id_tmp + "," + ticket_id_tmp + ",'" + passengername +  "','" + pgender[0] + "');";
-    // var insticket = "INSERT INTO ticket values(" + ticket_id_tmp + "," + booking_id_tmp + "," + flight_tmp +  "," + seat_tmp + ");";
-    mysqlConnection.query(select_booking_id, (err, bookingids_found, fields) => {
-        for(var i=0; i<bookingids_found.length; i++){
-            bookingids.push(bookingids_found[i].booking_id);
-        }
-        while(bookingids.includes(booking_id_tmp)){
-            booking_id_tmp=getRandomInt(1000);
-            console.log("lol");
-        }
-        // console.log("booking_id_tmp");
-        // console.log(booking_id_tmp);
+    var insbooking = "INSERT INTO booking (user_id, booking_timestamp) values(" + user_id + ",CURRENT_TIMESTAMP());";
+    mysqlConnection.query(insbooking, (err, booking_ins_output, fields) => {
         if (!err){
-            var insbooking = "INSERT INTO booking values(" + booking_id_tmp + "," + user_id + ",CURRENT_TIMESTAMP());";
-            mysqlConnection.query(insbooking, (err, booking_ins_output, fields) => {
-                if (!err){
-                    mysqlConnection.query(select_ticket_id, (err, ticketids_found, fields) => {
-                        if (!err){
-                            for(var i=0; i<ticketids_found.length; i++){
-                                ticketids.push(ticketids_found[i].ticket_id);
-                            }
-                            for(var j=0; j<pcount; j++){
-                                while(ticketids.includes(ticket_id_tmp)){
-                                    ticketids.push(getRandomInt(1000));
-                                }
-                                insticket = insticket + "(" + ticketids[ticketids.length-1] + "," + booking_id_tmp + "," + flight_tmp + "," + seat_tmp + "), ";
-                            }
-                            if(pcount==1){
-                                insticket=insticket.substring(0,insticket.length-1);
-                            }
-                            insticket = insticket + ";";
-                            mysqlConnection.query(insticket, (err, ticket_ins_output, fields) => {
-                                if (!err){
-                                    mysqlConnection.query(select_passenger_id, (err, passengerids_found, fields) => {
-                                        if (!err){
-                                            for(var i=0; i<passengerids_found.length; i++){
-                                                passengerids.push(passengerids_found[i].passenger_id);
-                                            }
-                                            for(var j=0; j<pcount; j++){
-                                                while(passengerids.includes(passenger_id_tmp)){
-                                                    passengerids.push(getRandomInt(1000));
-                                                }
-                                                inspassenger = inspassenger + "(" + passengerids[passengerids.length-1] + "," + ticketids[ticketids.length-pcount+j] + ",'" + pname[j] + "','" + pgender[j] + "'), ";
-                                            }
-                                            if(pcount==1){
-                                                inspassenger=inspassenger.substring(0,inspassenger.length-1);
-                                            }
-                                            inspassenger = inspassenger + ";";
-                                            mysqlConnection.query(inspassenger, (err, passenger_ins_output, fields) => {
-                                                if (!err){
-                                                    res.send("lessgo");
-                                                }
-                                                else
-                                                console.log(err);
-                                            });
-                                        }
-                                        else
-                                        console.log(err);
-                                    });
-                                }
-                                else
-                                console.log(err);
-                            });
-                        }
-                        else
-                        console.log(err);
-                    });
-                }
-                    else
-                    console.log(err);
-            });
-        }
-            else
-            console.log(err);
+            console.log("inserted booking id");
+            console.log(booking_ins_output.insertId);
+            booking_id_tmp = booking_ins_output.insertId;
+            for(var j=0; j<pcount; j++){
+                var insticket = "INSERT INTO ticket(booking_id, flight_id, seat_no) values(" + booking_id_tmp + "," + flight_id_tmp + "," + seat_tmp.pop() + ");";
+                mysqlConnection.query(insticket, (err, ticket_ins_output, fields) => {
+                    if(!err){
+                        console.log("inserted ticket id");
+                        console.log(ticket_ins_output.insertId);
+                        ticket_id_tmp = ticket_ins_output.insertId;
+                        var inspassenger = "INSERT INTO passenger(ticket_id, name, gender) values(" + ticket_id_tmp + ",'" + pname.pop() + "','"  + pgender.pop() + "');";
+                        mysqlConnection.query(inspassenger, (err, ticket_ins_output, fields) => {
+                            if(!err){
+                                console.log("search");
+                            }else
+                            console.log(err)
+                        });
+                    }else
+                    console.log(err)
+                })
+            }
+
+        }else
+        console.log(err);
     });
     
 });
