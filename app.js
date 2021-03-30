@@ -126,6 +126,30 @@ app.post("/search", function(req, res){
 
 });
 
+//restict user from direct url entering 
+permittedLinker = ['localhost', '127.0.0.1'];  // who can link here?
+
+app.use(function(req, res, next) {
+  var i=0, notFound=1, referer=req.get('Referer');
+
+  if ((req.path==='/') || (req.path==='')) next(); // pass calls to '/' always
+
+  if (referer){
+      while ((i<permittedLinker.length) && notFound){
+      notFound= (referer.indexOf(permittedLinker[i])===-1);
+      i++;
+      }
+  }
+
+  if (notFound) { 
+     res.status(403).send('Protected area. Please enter website through "search page"');
+  } else {
+    next(); // access is permitted, go to the next step in the ordinary routing
+  }
+});
+
+//
+
 app.get("/flights", function(req, res){
     res.render("flights", {flights: flightsfound});
 });
