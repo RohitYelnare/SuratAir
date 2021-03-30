@@ -8,10 +8,7 @@ app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-//Niranjan bhadwa aahe
-var flightsfound;
-var flight_id_tmp, seat_tmp, pcount;
-var pname=[], pgender=[];
+var flightsfound,flight_id_tmp, seat_tmp=[], pcount,pname=[], pgender=[],occupied=[];
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
@@ -117,7 +114,6 @@ app.post("/search", function(req, res){
             }else{
                 flightsfound=flights;
                 res.redirect("flights");
-                // res.render("flights", {rows:flights});
             }
         }
             else
@@ -127,26 +123,26 @@ app.post("/search", function(req, res){
 });
 
 //restict user from direct url entering 
-permittedLinker = ['localhost', '127.0.0.1'];  // who can link here?
+// permittedLinker = ['localhost', '127.0.0.1'];  // who can link here?
 
-app.use(function(req, res, next) {
-  var i=0, notFound=1, referer=req.get('Referer');
+// app.use(function(req, res, next) {
+//   var i=0, notFound=1, referer=req.get('Referer');
 
-  if ((req.path==='/') || (req.path==='')) next(); // pass calls to '/' always
+//   if ((req.path==='/') || (req.path==='')) next(); // pass calls to '/' always
 
-  if (referer){
-      while ((i<permittedLinker.length) && notFound){
-      notFound= (referer.indexOf(permittedLinker[i])===-1);
-      i++;
-      }
-  }
+//   if (referer){
+//       while ((i<permittedLinker.length) && notFound){
+//       notFound= (referer.indexOf(permittedLinker[i])===-1);
+//       i++;
+//       }
+//   }
 
-  if (notFound) { 
-     res.status(403).send('Protected area. Please enter website through "search page"');
-  } else {
-    next(); // access is permitted, go to the next step in the ordinary routing
-  }
-});
+//   if (notFound) { 
+//      res.status(403).send('Protected area. Please enter website through "search page"');
+//   } else {
+//     next(); // access is permitted, go to the next step in the ordinary routing
+//   }
+// });
 
 //
 
@@ -157,15 +153,28 @@ app.get("/flights", function(req, res){
 app.post("/flights", function(req, res){
     // const query = "SELECT ac.capacity FROM fleet ac, flight f WHERE f.aircraft_id=ac.aircraft_id AND f.flight_id=" + req.body.flightno + ";";
     flight_id_tmp = req.body.flightno;
+    const occupied_query = "SELECT seat_no FROM ticket t WHERE flight_id=" + flight_id_tmp + ";";
+
+    mysqlConnection.query(occupied_query, (err, occ_seats, fields) => {
+        if (!err){
+            occ_seats.forEach((obj)=>occupied.push(obj.seat_no))
+        }
+            else
+            console.log(err);
+    });
     res.redirect("seat");
 });
 
 app.get("/seat", function(req, res){
-    res.render("seat", {pcount: pcount});
+    res.render("seat", {pcount: pcount, occupied:occupied});
 });
 
 app.post("/seat", function(req, res){
-    seat_tmp = req.body.seatno;
+    for(var i=0; i<=180; i++){
+        if(req.body[i]=='on')
+        seat_tmp.push(i);
+    }
+    console.log(seat_tmp);
     res.redirect("pdetails");
 });
 

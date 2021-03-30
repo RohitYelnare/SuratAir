@@ -2,24 +2,40 @@
     <title>Select Seatno</title>
 </head>
 <body>
-    <div class="container">
-        <div class="signup-content">
-            <div class="signup-form">
-                <h2 class="form-title">Select Seat</h2>
-                <form method="POST" class="register-form" id="register-form" autocomplete="off">
-                    <%for(var i=pcount; i>0; i--){%>
-                        <div class="form-group">
-                            <label for="Seat"></label>
-                            <input type="number" name="seatno" id="seatno" placeholder="Seat No"/>
+            <form method="POST" name="seatform" class="register-form" id="register-form" autocomplete="off">
+              <div class="form-group form-button">
+                <input type="submit" name="signup" id="signup" class="form-submit" value="Select"/>
+              </div>
+              <div class="plane">
+                <div class="cockpit">
+                  <h1>Please select a seat</h1>
+                </div>
+                <div class="exit exit--front fuselage">
+                  
+                </div>
+                <ol class="cabin fuselage">
+                  <%for (var j=1; j<=30; j++){%>
+                    <li class="row row--1">
+                      <ol class="seats" type="A">
+                        <%for (var i=6*(j-1)+1; i<=6*j; i++){%>
+                          <li class="seat">
+                            <%if(occupied.includes(i)){%>
+                              <input type="checkbox" disabled id="<%=i%>"/>
+                              <%}else{%>
+                                <input type="checkbox" id="<%=i%>" name="<%=i%>"/>
+                                <%}%>
+                                <label for="<%=i%>"><%=i%></label>
+                              </li>
+                              <%}%>
+                            </ol>
+                          </li>
+                          <%}%>
+                        </ol>
+                        <div class="exit exit--back fuselage">
+                          
                         </div>
-                    <%}%>
-                    <div class="form-group form-button">
-                        <input type="submit" name="signup" id="signup" class="form-submit" value="Select"/>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-
-<%- include('partials/footer') %>
+                      </div>
+                    </form>
+                      
+                      <%- include('partials/footer') %>
+                      
