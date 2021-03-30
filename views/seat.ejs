@@ -1,6 +1,25 @@
 <%- include('partials/header') %>
     <title>Select Seatno</title>
 </head>
+<script>
+  function checkboxes(pcount){
+    var inputElems = document.getElementsByTagName("input"),count = 0,limit=pcount;
+    for (var i=0; i<inputElems.length; i++) {      
+        if (inputElems[i].type == "checkbox" && inputElems[i].checked == true){
+          count++;
+        }
+    }
+    if (count> limit) {
+      console.log("You can select maximum of " + limit + " checkboxes.");
+      alert("You can select maximum of " + limit + " checkboxes.");						
+      for (var i=0; i<inputElems.length; i++) {      
+        if (inputElems[i].type == "checkbox" && inputElems[i].checked == true){
+          inputElems[i].checked=false;
+        }
+      }
+    }
+  }
+</script>
 <body>
             <form method="POST" name="seatform" class="register-form" id="register-form" autocomplete="off">
               <div class="form-group form-button">
@@ -22,7 +41,7 @@
                             <%if(occupied.includes(i)){%>
                               <input type="checkbox" disabled id="<%=i%>"/>
                               <%}else{%>
-                                <input type="checkbox" id="<%=i%>" name="<%=i%>"/>
+                                <input type="checkbox" id="<%=i%>" name="<%=i%>" onclick="checkboxes(<%=pcount%>)"/>
                                 <%}%>
                                 <label for="<%=i%>"><%=i%></label>
                               </li>
@@ -36,6 +55,5 @@
                         </div>
                       </div>
                     </form>
-                      
+                      <script></script>
                       <%- include('partials/footer') %>
-                      

@@ -175,6 +175,8 @@ app.post("/seat", function(req, res){
         seat_tmp.push(i);
     }
     console.log(seat_tmp);
+    console.log("pcount");
+    console.log(pcount);
     res.redirect("pdetails");
 });
 
