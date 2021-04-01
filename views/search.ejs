@@ -1,18 +1,18 @@
 <%- include('partials/header') %>
     <title>Book Flight</title>
 <script>
-function datepick()
-{
-    var todaysDate = new Date(); 
-    var year = todaysDate.getFullYear();                        // YYYY
-    var month = ("0" + (todaysDate.getMonth() + 1)).slice(-2);  // MM
-    var day = ("0" + todaysDate.getDate()).slice(-2);           // DD
-    var minDate = (year +"-"+ month +"-"+ day);                 // Results in "YYYY-MM-DD" for today's date 
+// function datepick()
+// {
+//     var todaysDate = new Date(); 
+//     var year = todaysDate.getFullYear();                        // YYYY
+//     var month = ("0" + (todaysDate.getMonth() + 1)).slice(-2);  // MM
+//     var day = ("0" + todaysDate.getDate()).slice(-2);           // DD
+//     var minDate = (year +"-"+ month +"-"+ day);                 // Results in "YYYY-MM-DD" for today's date 
 
-    document.getElementsByName("date")[0].setAttribute('min', minDate);    //min accepts only ISO form
+//     document.getElementsByName("date")[0].setAttribute('min', minDate);    //min accepts only ISO form
      
 
-}
+// }
 
 </script>
     

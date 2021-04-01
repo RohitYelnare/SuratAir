@@ -27,16 +27,21 @@
               </div>
               <div class="plane">
                 <div class="cockpit">
-                  <h1>Please select a seat</h1>
+                  <%if (pcount==1){%>
+                  <h1>Please select 1 seat</h1>
+                  <%}else{%>
+                    <h1>Please select <%=pcount%> seats</h1>
+                  <%}%>
                 </div>
                 <div class="exit exit--front fuselage">
                   
                 </div>
                 <ol class="cabin fuselage">
-                  <%for (var j=1; j<=30; j++){%>
+                  <%for (var j=1; j<=3; j++){%>
                     <li class="row row--1">
+                      <%for (var k=1; k<=10; k++){%>
                       <ol class="seats" type="A">
-                        <%for (var i=6*(j-1)+1; i<=6*j; i++){%>
+                        <%for (var i=60*(j-1)+(k-1)*6+1; i<=60*(j-1)+(k-1)*6+6; i++){%>
                           <li class="seat">
                             <%if(occupied.includes(i)){%>
                               <input type="checkbox" disabled id="<%=i%>"/>
@@ -47,6 +52,8 @@
                               </li>
                               <%}%>
                             </ol>
+                            <%}%>
+                            <div class="restroom restroom--front fuselage">
                           </li>
                           <%}%>
                         </ol>
