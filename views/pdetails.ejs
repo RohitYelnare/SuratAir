@@ -2,7 +2,7 @@
     <title>Book Flight</title>
 </head>
 <body>
-    <div class="container">
+    <!-- <div class="container">
         <div class="signup-content">
             <div class="signup-form">
                 <h2 class="form-title">Enter passenger details</h2>
@@ -23,7 +23,72 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> -->
+    <section class="banner" id="top">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-md-7 col-md-offset-3">
+                    <section id="first-tab-group" class="tabgroup">
+                        <div id="tab1" style="height:auto">
+                            <div class="submit-form">
+                                <h4>Enter Passenger Details</em>:</h4>
+                                <form id="form-submit" action="" method="POST">
+                                    <%for(var i=pcount; i>0; i--){%>
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            
+                                            <fieldset>
+                                                <label for="passenger name">Passenger name <%=pcount-i+1%>:</label>
+                                                
+                                                <input class="box-control" type="text" name="name" required id="name" />
+                                            </fieldset>
 
+                                        </div>
+                                        <div class="col-md-7">
+                                            <fieldset>
+                                                <label for="to">Gender:</label>
+                                                <select class="box-control" required name='gender'>
+                                                    <option value=""></option>
+                                                        <option value="M">Male</option>
+                                                        <option value="F">Female</option>
+                                                        <option value="O">Other</option>
+                                                </select>
+                                                <!-- <input  class="box-control" type="text" name="gender" required id="gender" /> -->
+                                            </fieldset>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <fieldset>
+                                                <label for="to">age:</label>
+                                                <!-- <select required name='to' onchange='this.form.()'>
+                                                    
+                                                </select> -->
+                                                <input  class="box-control" type="number" name="age" required id="age" min = "0"/>
+                                            </fieldset>
+                                        </div>
+                                       
+                                       
+                                        
+                                        
+                                    
+                                        
+                                    </div>
+                                    <%}%> 
+                                    <fieldset>
+                                        <button type="submit" class="btn" id="form-submit">Order Ticket Now</button>
+                                    </fieldset>
+                                    <!-- <div class="col-md-4 col-xs-push-8">
+                                       
+                                    </div> -->
+                                    
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <!-- id="form-submit"  -->
 <%- include('partials/footer') %>

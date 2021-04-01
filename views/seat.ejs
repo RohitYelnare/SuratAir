@@ -1,4 +1,5 @@
 <%- include('partials/header') %>
+
     <title>Select Seatno</title>
 </head>
 <script>
@@ -10,8 +11,8 @@
         }
     }
     if (count> limit) {
-      console.log("You can select maximum of " + limit + " checkboxes.");
-      alert("You can select maximum of " + limit + " checkboxes.");						
+      console.log("You can select maximum of " + limit + " seats.");
+      alert("You can select maximum of " + limit + " seats.");						
       for (var i=0; i<inputElems.length; i++) {      
         if (inputElems[i].type == "checkbox" && inputElems[i].checked == true){
           inputElems[i].checked=false;
@@ -19,12 +20,32 @@
       }
     }
   }
+  function chk_seats(pcount){
+    var inputElems = document.getElementsByTagName("input"),count = 0;
+    for (var i=0; i<inputElems.length; i++) {      
+        if (inputElems[i].type == "checkbox" && inputElems[i].checked == true){
+          count++;
+        }
+    }
+    if (count!=pcount) {
+      alert("Please select " + pcount+ " seats.");	
+      return false;
+      for (var i=0; i<inputElems.length; i++) {      
+        if (inputElems[i].type == "checkbox" && inputElems[i].checked == true)
+        {
+          inputElems[i].checked=false;
+        }
+        else
+        {
+          return true;
+        }
+      }
+    
+    }
+  }
 </script>
 <body>
             <form method="POST" name="seatform" class="register-form" id="register-form" autocomplete="off">
-              <div class="form-group form-button">
-                <input type="submit" name="signup" id="signup" class="form-submit" value="Select"/>
-              </div>
               <div class="plane">
                 <div class="cockpit">
                   <%if (pcount==1){%>
@@ -61,6 +82,12 @@
                           
                         </div>
                       </div>
+                      <div class="d-flex justify-content-center">
+                        <button type="submit" name="signup" id="signup" class="btn btn--primary" onclick="return chk_seats(<%=pcount%>)" style="background-color: #ffe165;" value="Select">Proceed</button>
+                      </div>
+                      <br>
+                      <br>
+                      <br>
                     </form>
                       <script></script>
                       <%- include('partials/footer') %>

@@ -1,36 +1,110 @@
 <%- include('partials/header') %>
+<link rel="stylesheet" href="css/flights.css">
+
     <title>Book Flight</title>
 </head>
 <body>
-    <%flights.forEach(function(flight){%>
-        <form method="POST" class="register-form" id="register-form" autocomplete="off">
-            <p>SA<%= flight.flight_id %></p>
-            <p>departure time: <%= flight.dept_time %></p>
-            <p>arrival time: <%= flight.arr_time %></p>
-            <p>Rs. <%= flight.fare %></p>
-            <p>date: <%= flight.dept_date %></p>
-            <button type="submit" name="flightno" class="form-submit" value=<%= flight.flight_id%>>Book</button>
-                <!-- <input type="submit" name="flightno" class="form-submit" value=<%= flight.flight_id%>>Book -->
-            <br>
-        </form>
-        <%})%>
-    <!-- <div class="container">
-        <div class="signup-content">
-            <div class="signup-form">
-                <h2 class="form-title">Search Flight</h2>
-
-                <form method="POST" class="register-form" id="register-form" autocomplete="off">
-                    <div class="form-group">
-                        <label for="dept"></label>
-                        <input type="text" name="dept" id="dept" placeholder="From"/>
-                    </div>
-                    <div class="form-group form-button">
-                        <input type="submit" name="signup" id="signup" class="form-submit" value="Book"/>
-                    </div>
-                </form>
+        <!-- <div class="container">
+            <div class="signup-content">
+                <div class="signup-form">
+                    <h2 class="form-title">Search Flight</h2>
+                    
+                    <form method="POST" class="register-form" id="register-form" autocomplete="off">
+                        <div class="form-group">
+                            <label for="dept"></label>
+                            <input type="text" name="dept" id="dept" placeholder="From"/>
+                        </div>
+                        <div class="form-group form-button">
+                            <input type="submit" name="signup" id="signup" class="form-submit" value="Book"/>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
     </div> -->
+    <div class="container">
+        <section class="dashboard">
+    
+          <section class="flights">
+            <header>
+              <p class="flights__total">183 <span>results</span></p>
+            </header>
+            
+            <section class="flights-list">
+                <%flights.forEach(function(flight){%>
+                    <form method="POST" class="register-form" id="register-form" autocomplete="off">
+              <article class="flight-card flights-list__item">
+                <div class="flight-card__airlines">
+            <p>SA</p>
+            <p name="flightno"><%= flight.flight_id %></p>
+                    
+                  <!-- /.flight-card__airline -->
+                </div>
+                <!-- /.flight-card__airlines -->
+                <div class="flight-card__departure">
+                  <time class="flight-card__time"><%= flight.dept_time %></time>
+                  <h2 class="flight-card__city"><%= flight.dept_code %></h2>
+                  <time class="flight-card__day"><%= flight.dept_date %></time>
+                </div>
+                <!-- /.flight-card__departure -->
+                <div class="flight-card__route">
+                  <p class="flight-card__duration"><%= flight.arr_time %></p>
+                  <div class="flight-card__route-line route-line" aria-hidden="true">
+                    <div class="route-line__stop route-line__start" aria-hidden="true"></div>
+                    <!-- /.route-line__start -->
+                    <div class="route-line__stop route-line__end" aria-hidden="true"></div>
+                    <!-- /.route-line__start -->
+                  </div>
+                  <!-- flight-card__route-line -->
+                  <p class="flight-card__type">Non-stop</p>
+                </div>
+                <div class="flight-card__arrival">
+                  <time class="flight-card__time"><%= flight.arr_time %></time>
+                  <h2 class="flight-card__city"><%= flight.arr_code %></h2>
+                  <time class="flight-card__day"><%= flight.dept_date %></time>
+                </div>
+                <!-- /.flight-card__arrival -->
+                <div class="flight-card__action">
+                  <p class="flight-card__price styled-price">₹ <%= flight.fare %></p>
+                  <br>
+                  <button type="submit" name="flightno" id="form-submit" value=<%= flight.flight_id%> class="flight-card__cta button button--orange submit-form button ">Book</button>
 
+                  <!-- <button class="flight-card__cta button button--orange">Select</button> -->
+                </div>
+                <!-- /.flight-card__action -->
+              </article>
+            </form>
+            <br>
+            <%})%>
+            </section>
+    
+          </section>
+    
+          <aside class="sidebar">
+            <section class="sidebar-section">
+              <button class="button button--purple sidebar__action">Get price alerts</button>
+            </section>
+            <!-- /.sidebar-section -->
+            
+            <section class="sidebar-section">
+              <h2 class="sidebar-section__heading">Stops</h2>
+              <ul class="choice-list">
+                <li class="choice-list__item">
+                  <input id="checkbox-1" type="checkbox" class="checkbox" checked="checked">
+                  <label for="checkbox-1">Non-stop</label>
+                </li>
+                <li class="choice-list__item">
+                  <input id="checkbox-2" type="checkbox" class="checkbox">
+                  <label for="checkbox-2">1 Stop</label>
+                </li>
+                <li class="choice-list__item">
+                  <input id="checkbox-3" type="checkbox" class="checkbox">
+                  <label for="checkbox-3">2+ Stops</label>
+                </li>
+              </ul>
+            </section>
+          </aside>
+        </section>
+        <!-- /.dashboard -->
+      </div>
 
 <%- include('partials/footer') %>

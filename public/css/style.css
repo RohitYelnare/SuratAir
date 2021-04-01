@@ -66,6 +66,34 @@ html {
   right: 0;
 }
 
+.restroom {
+  position: relative;
+  height: 50px;
+}
+
+.restroom:before, .restroom:after {
+  content: "Restroom";
+  font-size: 14px;
+  line-height: 18px;
+  padding: 0px 2px;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  display: block;
+  position: absolute;
+  background: green;
+  color: white;
+  top: 50%;
+  -webkit-transform: translate(0, -50%);
+          transform: translate(0, -50%);
+}
+
+.restroom:before {
+  left: 0;
+}
+
+.restroom:after {
+  right: 0;
+}
+
 .fuselage {
   border-right: 5px solid #d8d8d8;
   border-left: 5px solid #d8d8d8;
@@ -178,6 +206,42 @@ ol {
   cursor: pointer;
   -webkit-box-shadow: 0 0 0px 2px #5C6AFF;
           box-shadow: 0 0 0px 2px #5C6AFF;
+}
+
+.box-control{
+  width: 100%;
+    display: block;
+    border: none;
+    border-bottom: 1px solid #999;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(153, 153, 153);
+    padding: 6px 30px;
+    font-family: Poppins;
+    box-sizing: border-box;
+}
+.box-control:focus{
+  outline: none;
+}
+
+.seat-select{
+  margin-top: 4rem;
+  margin-bottom: 2rem;
+  width: 20rem;
+  margin-left: 44%;
+  margin-right: 50%;
+
+}
+
+.seat-button{
+  width: 20rem;
+  padding: 10px 4px;
+  border-radius: 5px;
+  background-color: #ffe165;
+  font-size: 13px;
+  font-weight: 600;
+  color: #121212;
+  border-width: 0;
 }
 
 @-webkit-keyframes rubberBand {

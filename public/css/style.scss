@@ -58,6 +58,31 @@
       right: 0;
     }
   }
+
+  .restroom {
+    position: relative;
+    height: 50px;
+    &:before,
+    &:after {
+      content: "Restroom";
+      font-size: 14px;
+      line-height: 18px;
+      padding: 0px 2px;
+      font-family: "Arial Narrow", Arial, sans-serif;
+      display: block;
+      position: absolute;
+      background: green;
+      color: white;
+      top: 50%;
+      transform: translate(0, -50%);
+    }
+    &:before {
+      left: 0;
+    }
+    &:after {
+      right: 0;
+    }
+  }
   
   .fuselage {
     border-right: 5px solid #d8d8d8;

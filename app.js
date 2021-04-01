@@ -8,7 +8,7 @@ app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-var flightsfound,flight_id_tmp, seat_tmp=[], pcount,pname=[], pgender=[],occupied=[];
+var flightsfound,destinationsfound,flight_id_tmp, seat_tmp=[], pcount=[],pname=[], pgender=[],occupied=[], page=[];
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
@@ -29,7 +29,16 @@ mysqlConnection.connect((err)=> {
 });
 
 app.get("/", function(req, res){
-    res.render("home");
+    const query = "SELECT city, country FROM airport;";
+
+    mysqlConnection.query(query, (err, destinations, fields) => {
+        if (!err){
+            destinationsfound=destinations;
+            // res.send(destinationsfound);
+        }else
+            console.log(err);
+    });
+    res.redirect("search");
 });
 
 app.get("/booking", function(req, res){
@@ -97,7 +106,8 @@ app.post("/login", function(req, res){
 })
 
 app.get("/search", function(req, res){
-    res.render("search");
+
+    res.render("search", {destinationsfound:destinationsfound});
 })
 
 app.post("/search", function(req, res){
@@ -151,6 +161,7 @@ app.get("/flights", function(req, res){
 });
 
 app.post("/flights", function(req, res){
+    console.log(req.body);
     // const query = "SELECT ac.capacity FROM fleet ac, flight f WHERE f.aircraft_id=ac.aircraft_id AND f.flight_id=" + req.body.flightno + ";";
     flight_id_tmp = req.body.flightno;
     const occupied_query = "SELECT seat_no FROM ticket t WHERE flight_id=" + flight_id_tmp + ";";
@@ -174,9 +185,7 @@ app.post("/seat", function(req, res){
         if(req.body[i]=='on')
         seat_tmp.push(i);
     }
-    console.log(seat_tmp);
-    console.log("pcount");
-    console.log(pcount);
+    console.log()
     res.redirect("pdetails");
 });
 
@@ -185,8 +194,10 @@ app.get("/pdetails", function(req, res){
 });
 
 app.post("/pdetails", function(req, res){
+    console.log(req.body);
     pname = req.body.name;
     pgender = req.body.gender;
+    page = req.body.age;
     var booking_id_tmp, user_id=1;
     var ticket_id_tmp;
     var passenger_id_tmp;
@@ -194,20 +205,16 @@ app.post("/pdetails", function(req, res){
     var insbooking = "INSERT INTO booking (user_id, booking_timestamp) values(" + user_id + ",CURRENT_TIMESTAMP());";
     mysqlConnection.query(insbooking, (err, booking_ins_output, fields) => {
         if (!err){
-            console.log("inserted booking id");
-            console.log(booking_ins_output.insertId);
             booking_id_tmp = booking_ins_output.insertId;
             for(var j=0; j<pcount; j++){
                 var insticket = "INSERT INTO ticket(booking_id, flight_id, seat_no) values(" + booking_id_tmp + "," + flight_id_tmp + "," + seat_tmp.pop() + ");";
                 mysqlConnection.query(insticket, (err, ticket_ins_output, fields) => {
                     if(!err){
-                        console.log("inserted ticket id");
-                        console.log(ticket_ins_output.insertId);
                         ticket_id_tmp = ticket_ins_output.insertId;
-                        var inspassenger = "INSERT INTO passenger(ticket_id, name, gender) values(" + ticket_id_tmp + ",'" + pname.pop() + "','"  + pgender.pop() + "');";
+                        var inspassenger = "INSERT INTO passenger(ticket_id, name, gender, age) values(" + ticket_id_tmp + ",'" + pname.pop() + "','"  + pgender.pop() + "'," + page.pop() + ");";
                         mysqlConnection.query(inspassenger, (err, ticket_ins_output, fields) => {
                             if(!err){
-                                console.log("search");
+                                console.log(req.body);
                             }else
                             console.log(err)
                         });
