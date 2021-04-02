@@ -16,6 +16,17 @@
 
 // }
 
+function updateSelect(changedSelect, selectId) {
+   var otherSelect = document.getElementById(selectId);
+   for (var i = 0; i < otherSelect.options.length; ++i) {
+       otherSelect.options[i].disabled = false;
+   }
+   if (changedSelect.selectedIndex == 0) {
+      return;
+   }
+   otherSelect.options[changedSelect.selectedIndex].disabled = true;
+}
+
 </script>
     
     
@@ -49,7 +60,7 @@
                                         <div class="col-md-6">
                                             <fieldset>
                                                 <label for="dept">From:</label>
-                                                <select required name='dept'>
+                                                <select required name='dept' id="place1" onchange="updateSelect(this,'place2')" >
                                                     <option value="">Select a location...</option>
                                                     <% for (var i = 0; i < destinationsfound.length; i++) { %>
                                                         <option>
@@ -62,7 +73,7 @@
                                         <div class="col-md-6">
                                             <fieldset>
                                                 <label for="arr">To:</label>
-                                                <select required name='arr'>
+                                                <select required name='arr' id="place2" onchange="updateSelect(this,'place1')" >
                                                     <option value="">Select a location...</option>
                                                     <% for (var i = 0; i < destinationsfound.length; i++) { %>
                                                         <option>
