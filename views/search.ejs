@@ -1,6 +1,11 @@
 <%- include('partials/header') %>
 <link rel="stylesheet" href="css/flights.css">
-
+    <style>
+    .showbtn:hover {
+        color: HSL(var(--button-hover-text-color, 0, 0%, 100%));
+        background-color: darkorange;
+        opacity: 0.9;
+      }</style>
     <title>Book Flight</title>
 <script>
 // function datepick()
@@ -53,7 +58,7 @@ function updateSelect(changedSelect, selectId) {
                 <div class="col-md-5 col-md-offset-1">
                     <section id="first-tab-group" class="tabgroup">
                         <div id="tab1">
-                            <div class="submit-form">
+                            <div class="submit-form"  style="border-radius: 1.5rem;">
                                 <h4>Check availability for <em>flights</em>:</h4>
                                 <form id="form-submit" action="" method="POST">
                                     <div class="row">
@@ -117,7 +122,15 @@ function updateSelect(changedSelect, selectId) {
                                         </div> -->
                                         <div class="col-md-5">
                                             <fieldset>
-                                                <button type="submit" id="form-submit" class="flight-card__cta custombtn custombtn--orange">Show flights</button>
+                                                <button type="submit" id="form-submit" class="showbtn" style="border-radius: 0.8rem;
+                                                padding: 0.75em 2em;
+                                                appearance: none;
+                                                background-color: HSL(var(--button-background-color, var(--color-orange)));
+                                                color: HSL(var(--button-text-color, 0, 0%, 100%));
+                                                font-size: 1.5rem;
+                                                border: none;
+                                                cursor: pointer;
+                                                transition: background-color 0.7s var(--ease-out-quart), color 0.7s var(--ease-out-quart);">Show flights</button>
                                             </fieldset>
                                         </div>
                                     </div>

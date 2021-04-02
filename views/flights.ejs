@@ -23,7 +23,20 @@
     </div> -->
     <div class="container">
         <section class="dashboard">
-    
+            <header class="booking-bar" style="background-color: HSL(var(--button-background-color, var(--color-orange)));">
+              <div class="booking-bar__info">
+                <h2 class="booking-bar__heading"><%=flights[0].dept_city%> - <%=flights[0].arr_city%><h2>
+                <p class="booking-bar__sub-heading"><%=pcount%> Passengers</p>
+              </div>
+              <!-- /.booking-bar__info -->
+              <div class="booking-bar__inputs">
+                <div class="icon-input">
+                  <i class="icon-input__icon far fa-calendar-alt"></i>
+                  <input type="text" placeholder="Departure Date" value="<%=flights[0].dept_date.toString()%>" disabled style="background-color: white;">
+                </div>
+              </div>
+              <!-- booking-bar__inputs -->
+            </header>
           <section class="flights">
             <header>
               <p class="flights__total">183 <span>results</span></p>
@@ -41,9 +54,10 @@
                 </div>
                 <!-- /.flight-card__airlines -->
                 <div class="flight-card__departure">
-                  <time class="flight-card__time"><%= flight.dept_time %></time>
-                  <h2 class="flight-card__city"><%= flight.dept_code %></h2>
-                  <time class="flight-card__day"><%= flight.dept_date %></time>
+                  <time class="flight-card__time"><%=flight.dept_time.toString().substr(0,5)%></time>
+                  <h2 class="flight-card__city"><%=flight.dept_city%> (<%=flight.dept_code%>)</h2>
+                  <time class="flight-card__day"><%=flight.dept_name%></time><br>
+                  <!-- <time class="flight-card__day"><%=flight.dept_date%></time> -->
                 </div>
                 <!-- /.flight-card__departure -->
                 <div class="flight-card__route">
@@ -58,9 +72,10 @@
                   <p class="flight-card__type">Non-stop</p>
                 </div>
                 <div class="flight-card__arrival">
-                  <time class="flight-card__time"><%= flight.arr_time %></time>
-                  <h2 class="flight-card__city"><%= flight.arr_code %></h2>
-                  <time class="flight-card__day"><%= flight.dept_date %></time>
+                  <time class="flight-card__time"><%= flight.arr_time.toString().substr(0,5) %></time>
+                  <h2 class="flight-card__city"><%=flight.arr_city%> (<%=flight.arr_code%>)</h2>
+                  <time class="flight-card__day"><%=flight.arr_name%></time><br>
+                  <!-- <time class="flight-card__day"><%= flight.dept_date %></time> -->
                 </div>
                 <!-- /.flight-card__arrival -->
                 <div class="flight-card__action">
@@ -80,25 +95,19 @@
           </section>
     
           <aside class="sidebar">
-            <section class="sidebar-section">
+            <!-- <section class="sidebar-section">
               <button class="button button--purple sidebar__action">Get price alerts</button>
-            </section>
+            </section> -->
             <!-- /.sidebar-section -->
             
             <section class="sidebar-section">
-              <h2 class="sidebar-section__heading">Stops</h2>
+              <h2 class="sidebar-section__heading">Our covid-19 travel waiver policy provides:</h2>
               <ul class="choice-list">
                 <li class="choice-list__item">
-                  <input id="checkbox-1" type="checkbox" class="checkbox" checked="checked">
-                  <label for="checkbox-1">Non-stop</label>
+                  <label >- Zero cancellation charges</label>
                 </li>
                 <li class="choice-list__item">
-                  <input id="checkbox-2" type="checkbox" class="checkbox">
-                  <label for="checkbox-2">1 Stop</label>
-                </li>
-                <li class="choice-list__item">
-                  <input id="checkbox-3" type="checkbox" class="checkbox">
-                  <label for="checkbox-3">2+ Stops</label>
+                  <p >*Valid for ticket purchases on and before 30th April 2021</p>
                 </li>
               </ul>
             </section>

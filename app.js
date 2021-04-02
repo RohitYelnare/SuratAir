@@ -115,7 +115,7 @@ app.post("/search", function(req, res){
     const arr = req.body.arr;
     const date = req.body.date;
     pcount = req.body.pcount;
-    const query = "SELECT DISTINCT * FROM route r, flight f, airport a1, airport a2 WHERE  f.route_id=r.route_id AND r.dept_code=a1.code_id AND r.arr_code=a2.code_id AND f.dept_date='" + date + "' AND a1.city='" + dept +"' AND a2.city='" + arr + "';";
+    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r, flight f, airport a1, airport a2 WHERE  f.route_id=r.route_id AND r.dept_code=a1.code_id AND r.arr_code=a2.code_id AND f.dept_date='" + date + "' AND a1.city='" + dept +"' AND a2.city='" + arr + "';";
 
     mysqlConnection.query(query, (err, flights, fields) => {
         if (!err){
@@ -157,7 +157,7 @@ app.post("/search", function(req, res){
 //
 
 app.get("/flights", function(req, res){
-    res.render("flights", {flights: flightsfound});
+    res.render("flights", {flights: flightsfound, pcount:pcount});
 });
 
 app.post("/flights", function(req, res){
