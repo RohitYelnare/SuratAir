@@ -8,7 +8,7 @@ app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-var flightsfound,destinationsfound,flight_id_tmp, seat_tmp=[], pcount=[],pname=[], pgender=[],occupied=[], page=[];
+var flightsfound,destinationsfound,flight_id_tmp, seat_tmp=[], pcount=[],pname=[], pgender=[],occupied=[], page=[], flight_dur=[];
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
@@ -115,7 +115,7 @@ app.post("/search", function(req, res){
     const arr = req.body.arr;
     const date = req.body.date;
     pcount = req.body.pcount;
-    const query = "SELECT DISTINCT * FROM route r, flight f, airport a1, airport a2 WHERE  f.route_id=r.route_id AND r.dept_code=a1.code_id AND r.arr_code=a2.code_id AND f.dept_date='" + date + "' AND a1.city='" + dept +"' AND a2.city='" + arr + "';";
+    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r, flight f, airport a1, airport a2 WHERE  f.route_id=r.route_id AND r.dept_code=a1.code_id AND r.arr_code=a2.code_id AND f.dept_date='" + date + "' AND a1.city='" + dept +"' AND a2.city='" + arr + "';";
 
     mysqlConnection.query(query, (err, flights, fields) => {
         if (!err){
@@ -123,12 +123,15 @@ app.post("/search", function(req, res){
                 res.send("no flights found");
             }else{
                 flightsfound=flights;
+                flightsfound.forEach((flight)=>flight_dur.push(time_diff (flight.arr_time, flight.dept_time)));
+                console.log(flight_dur);
                 res.redirect("flights");
             }
         }
             else
             console.log(err);
     });
+
 
 });
 
@@ -157,7 +160,7 @@ app.post("/search", function(req, res){
 //
 
 app.get("/flights", function(req, res){
-    res.render("flights", {flights: flightsfound});
+    res.render("flights", {flights: flightsfound, pcount:pcount, flight_dur:flight_dur});
 });
 
 app.post("/flights", function(req, res){
@@ -237,3 +240,31 @@ if (port == null || port == "") {
 app.listen(port, function() {
   console.log("Airline Server started on port 3000");
 });
+
+function time_sec(sec)                                //seconds->HH:MM:SS
+      {
+          var hrs = Math.floor(sec / 3600);
+          var min = Math.floor((sec - (hrs * 3600)) / 60);
+          var seconds = sec - (hrs * 3600) - (min * 60);
+          seconds = Math.round(seconds * 100) / 100
+          
+          var result = (hrs < 10 ? "0" + hrs : hrs);
+          result += ":" + (min < 10 ? "0" + min : min);
+          result += ":" + (seconds < 10 ? "0" + seconds : seconds);
+          console.log(result);
+          return result;
+        }
+
+      function time_diff(t1,t2)                              //HH:MM:SS->seconds
+      {
+        var a = t1.split(':'); // split it at the colons
+        var b=  t2.split(':');
+        var s1 = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+        var s2 = (+b[0]) * 60 * 60 + (+b[1]) * 60 + (+b[2]); 
+        console.log(s1);
+        console.log(s2);
+        var SECONDS=s1-s2;
+        var time=time_sec(SECONDS);
+        console.log(time);
+        return time;
+      }

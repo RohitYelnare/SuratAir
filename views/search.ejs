@@ -63,6 +63,7 @@ function updateSelect(changedSelect, selectId) {
                                                 <select required name='dept' id="place1" onchange="updateSelect(this,'place2')" >
                                                     <option value="">Select a location...</option>
                                                     <% for (var i = 0; i < destinationsfound.length; i++) { %>
+                                                        
                                                         <option>
                                                            <%= destinationsfound[i].city %>
                                                         </option>
