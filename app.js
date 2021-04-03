@@ -45,16 +45,17 @@ app.get("/booking", function(req, res){
     res.render("booking");
 })
 
-app.get("/register", function(req, res){
-    res.render("register");
+app.get("/signup", function(req, res){
+    res.render("signup");
 })
 
-app.post("/register", function(req, res){
+app.post("/signup", function(req, res){
     const name = req.body.name;
     const email = req.body.email;
+    const mobile = req.body.mobile;
     const password = req.body.password;
     const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
-    const query = "INSERT INTO user (name, email, password) values('" + name + "', '" + email + "', '" + password + "')";
+    const query = "INSERT INTO user (name, email, mobile, password) values('" + name + "', '" + email + "'," + mobile + ",'" + password + "')";
 
     mysqlConnection.query(chkquery, (err, rows, fields) => {
         if (!err){
@@ -67,7 +68,7 @@ app.post("/register", function(req, res){
                         console.log(err);
                 });
             }else{
-                res.send("already exists");
+                res.send("user already exists");//ALERT
             }
         }
             else
@@ -84,17 +85,18 @@ app.post("/login", function(req, res){
     const email = req.body.email;
     const password = req.body.password;
     const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
-
+    console.log(email);
+    console.log(password);
     mysqlConnection.query(chkquery, (err, rows, fields) => {
         if (!err){
             if(rows.length==1){
                 if(rows[0].password==password){
                     res.send("successful login");
                 }else{
-                    res.send("wrong password");
+                    res.send("wrong password");//ALERT
                 }
             }else if(rows.length==0){
-                res.send("No such user found");
+                res.send("No such user found");//ALERT
             }else{
                 res.send("Multiple users found");
             }
