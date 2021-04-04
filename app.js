@@ -2,6 +2,11 @@ const express = require("express");
 const ejs = require("ejs");
 const mysql = require("mysql2");
 const { response } = require("express");
+var alert=require("alert");
+var JSAlert = require("js-alert");
+var flash=require("connect-flash");
+
+
 
 const app = express();
 app.use(express.static("public"));
@@ -9,6 +14,20 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 var flightsfound,destinationsfound,flight_id_tmp, seat_tmp=[], pcount=[],pname=[], pgender=[],occupied=[], page=[], flight_dur=[];
+
+app.use(require("express-session")({
+    secret:"The milk would do that",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(flash());
+
+app.use(function(req, res, next){
+     res.locals.message = req.flash();
+    next();
+});
+
+
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
@@ -62,13 +81,17 @@ app.post("/signup", function(req, res){
             if(rows.length==0){
                 mysqlConnection.query(query, (err, rows, fields) => {
                     if (!err){
-                        res.send("successfully registered");
+                       // res.send("successfully registered");
+                        req.flash("success","Registrstion Successful!! To continue please login first.");
+                        res.redirect("/login");
                     }
                         else
                         console.log(err);
                 });
             }else{
-                res.send("user already exists");//ALERT
+                //res.send("user already exists");//ALERT
+                req.flash("error","User already Exists! ");       
+                res.redirect("/signup");
             }
         }
             else
@@ -91,14 +114,25 @@ app.post("/login", function(req, res){
         if (!err){
             if(rows.length==1){
                 if(rows[0].password==password){
-                    res.send("successful login");
+                    // res.send("successful login");
+                    req.flash("success","Login Successful!");
+                    //to redirect after login (To show alert it is compulsory to include this)
+                   return res.redirect("/login");
+
                 }else{
-                    res.send("wrong password");//ALERT
+                    //res.send("wrong password");//ALERT
+                    req.flash("error","Wrong Password/Email");
+                    return res.redirect("/login");
+                    
                 }
             }else if(rows.length==0){
-                res.send("No such user found");//ALERT
+                //res.send("No such user found");//ALERT
+                req.flash("error","No User Found!!Please register yourself.");
+               return  res.redirect("/login");
+                
             }else{
-                res.send("Multiple users found");
+                //res.send("Multiple users found");
+                return res.redirect("/login");
             }
         }
             else

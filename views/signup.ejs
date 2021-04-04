@@ -28,7 +28,17 @@
 <!--===============================================================================================-->
 </head>
 <body>
-	
+	<% if(message.error) { %>
+		<div class="alert alert-danger" style="text-align: center;">
+			<%= message.error%>
+		</div>
+	<% } %>
+	<% if(message.success) { %>
+		<div class="alert alert-success" style="text-align: center;">
+			<%= message.success %>
+		</div>
+	<% } %>
+
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
 			<div class="wrap-login100" style="background-color: red; color: red;">
