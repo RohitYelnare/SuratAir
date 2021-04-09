@@ -78,8 +78,6 @@ app.post("/booking", function(req, res){
                 mysqlConnection.query(ticketsquery, (err, ticketsres, fields) => {
                     if (!err){
                         ticketsoutput.push(ticketsres);
-                        console.log("ticketsoutput");
-                        console.log(ticketsoutput);
                     }else
                     console.log(err);
                 });
@@ -93,10 +91,6 @@ app.post("/booking", function(req, res){
 })
 
 app.get("/tickets", function(req, res){
-    console.log(ticketsoutput[0][0].arr_code);
-    console.log(ticketsoutput[1][0].name);
-    console.log(ticketsoutput[1][1].name);
-    console.log(ticketsoutput[3][3].name);
     res.render("tickets", {bookingsoutput: bookingsoutput, ticketsoutput: ticketsoutput});
 });
 
