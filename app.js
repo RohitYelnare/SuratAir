@@ -3,6 +3,7 @@ const ejs = require("ejs");
 const mysql = require("mysql2");
 const { response } = require("express");
 var flash=require("connect-flash");
+const bcrypt=require("bcrypt");
 
 const app = express();
 app.use(express.static("public"));
@@ -114,32 +115,45 @@ app.post("/signup", function(req, res){
     const name = req.body.name;
     const email = req.body.email;
     const mobile = req.body.mobile;
-    const password = req.body.password;
-    const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
-    const insquery = "INSERT INTO user (name, email, mobile, password) values('" + name + "', '" + email + "'," + mobile + ",'" + password + "')";
+    var password = req.body.password;
+    const saltRounds=bcrypt.genSalt(20);
+   
+    //hashing the password;
+    bcrypt.genSalt(10, function(err, salt) {
+        if (err) return callback(err);
+    
+        bcrypt.hash(password, salt, function(err, hash) {
+            password = hash;
+             const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
+             const insquery = "INSERT INTO user (name, email, mobile, password) values('" + name + "', '" + email + "'," + mobile + ",'" + password + "')";
+            
 
-    mysqlConnection.query(chkquery, (err, chkres, fields) => {
-        if (!err){
-            if(chkres.length==0){
-                mysqlConnection.query(insquery, (err, insres, fields) => {
-                    if (!err){
-                        console.log(insres.insertId);
-                        user_id=insres.insertId;
-                       // res.send("successfully registered");
-                        req.flash("success","Registrstion Successful!! To continue please login first.");
-                        res.redirect("/");
+             mysqlConnection.query(chkquery, (err, chkres, fields) => {
+                if (!err){
+                    if(chkres.length==0){
+                        mysqlConnection.query(insquery, (err, insres, fields) => {
+                            if (!err){
+                                console.log(insres.insertId);
+                                user_id=insres.insertId;
+                               // res.send("successfully registered");
+                                req.flash("success","Registrstion Successful!! To continue please login first.");
+                                res.redirect("/");
+                            }
+                                else
+                                console.log(err);
+                        });
+                    }else{
+                        req.flash("error","Email id already used! Try signing up with a different email id");       
+                        res.redirect("/signup");
                     }
-                        else
-                        console.log(err);
-                });
-            }else{
-                req.flash("error","Email id already used! Try signing up with a different email id");       
-                res.redirect("/signup");
-            }
-        }
-            else
-            console.log(err);
+                }
+                    else
+                    console.log(err);
+            });
+        });
     });
+    
+    
 })
 
 app.get("/login", function(req, res){
@@ -149,13 +163,23 @@ app.get("/login", function(req, res){
 app.post("/login", function(req, res){
     const email = req.body.email;
     const password = req.body.password;
+    var flag;
     const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
-    console.log(email);
-    console.log(password);
+    // console.log(email);
+    // console.log(password);
+    
     mysqlConnection.query(chkquery, (err, chkres, fields) => {
         if (!err){
             if(chkres.length==1){
-                if(chkres[0].password==password){
+                bcrypt.compare(password,chkres[0].password, function(err, result) {
+                    if(!err){
+                        flag=true;
+                    }
+                    else{
+                        flag=false;
+                    }
+                });
+                if(!flag){                                                       //chkres[0].password==password
                     console.log(chkres[0].user_id);
                     user_id=chkres[0].user_id;
                     // res.send("successful login");
@@ -166,6 +190,7 @@ app.post("/login", function(req, res){
                     return res.redirect("/login");
                     
                 }
+                
             }else if(chkres.length==0){
                 req.flash("error","No User Found! Please sign up first.");
                 return  res.redirect("/login");
