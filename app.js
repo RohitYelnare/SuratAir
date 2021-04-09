@@ -2,21 +2,18 @@ const express = require("express");
 const ejs = require("ejs");
 const mysql = require("mysql2");
 const { response } = require("express");
-var alert=require("alert");
-var JSAlert = require("js-alert");
 var flash=require("connect-flash");
-
-
 
 const app = express();
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-var flightsfound,destinationsfound,flight_id_tmp, seat_tmp=[], pcount=[],pname=[], pgender=[],occupied=[], page=[], flight_dur=[];
+var flightsfound,destinationsfound,flight_id_tmp, user_id, seat_tmp=[], pcount=[],pname=[], 
+pgender=[],occupied=[], page=[], flight_dur=[], bookingsoutput=[], ticketsoutput=[];
 
 app.use(require("express-session")({
-    secret:"The milk would do that",
+    secret:"00000000",
     resave: false,
     saveUninitialized: false
 }));
@@ -62,7 +59,46 @@ app.get("/", function(req, res){
 
 app.get("/booking", function(req, res){
     res.render("booking");
+});
+
+app.post("/booking", function(req, res){
+    user_id=req.body.userid;
+    bookingsoutput=[], ticketsoutput=[];
+    console.log("user_id");
+    console.log(user_id);
+    var bookingquery = "select * from booking where user_id =" + user_id + ";";
+    // var ticketquery = "select * from booking where user_id =" + user_id + ";";
+    
+    mysqlConnection.query(bookingquery, (err, bookingres, fields) => {
+        if (!err){
+            // console.log("bookingres.length");
+            // console.log(bookingres.length);
+            for(var i=0; i<bookingres.length; i++){
+                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, f.route_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=" + user_id + " and f.flight_id=t.flight_id and b.booking_id=" + bookingres[i].booking_id + " and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
+                // console.log(bookingres[i].booking_id);
+                bookingsoutput.push(bookingres[i]);
+                mysqlConnection.query(ticketsquery, (err, ticketsres, fields) => {
+                    if (!err){
+                        ticketsoutput.push(ticketsres);
+                        console.log("ticketsoutput");
+                        console.log(ticketsoutput);
+                        // console.log("ticketsoutput0");
+                        // console.log(ticketsoutput[0]);
+                        // console.log("ticketsoutput1");
+                        // console.log(ticketsoutput[1]);
+                    }else
+                    console.log(err);
+                });
+            }
+            res.redirect("tickets");
+        }else
+        console.log(err);
+    });
 })
+
+app.get("/tickets", function(req, res){
+    res.render("tickets", {bookingsoutput: bookingsoutput, ticketsoutput: ticketsoutput});
+});
 
 app.get("/signup", function(req, res){
     res.render("signup");
@@ -74,30 +110,30 @@ app.post("/signup", function(req, res){
     const mobile = req.body.mobile;
     const password = req.body.password;
     const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
-    const query = "INSERT INTO user (name, email, mobile, password) values('" + name + "', '" + email + "'," + mobile + ",'" + password + "')";
+    const insquery = "INSERT INTO user (name, email, mobile, password) values('" + name + "', '" + email + "'," + mobile + ",'" + password + "')";
 
-    mysqlConnection.query(chkquery, (err, rows, fields) => {
+    mysqlConnection.query(chkquery, (err, chkres, fields) => {
         if (!err){
-            if(rows.length==0){
-                mysqlConnection.query(query, (err, rows, fields) => {
+            if(chkres.length==0){
+                mysqlConnection.query(insquery, (err, insres, fields) => {
                     if (!err){
+                        console.log(insres.insertId);
+                        user_id=insres.insertId;
                        // res.send("successfully registered");
                         req.flash("success","Registrstion Successful!! To continue please login first.");
-                        res.redirect("/login");
+                        res.redirect("/");
                     }
                         else
                         console.log(err);
                 });
             }else{
-                //res.send("user already exists");//ALERT
-                req.flash("error","User already Exists! ");       
+                req.flash("error","Email id already used! Try signing up with a different email id");       
                 res.redirect("/signup");
             }
         }
             else
             console.log(err);
     });
-
 })
 
 app.get("/login", function(req, res){
@@ -110,26 +146,23 @@ app.post("/login", function(req, res){
     const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
     console.log(email);
     console.log(password);
-    mysqlConnection.query(chkquery, (err, rows, fields) => {
+    mysqlConnection.query(chkquery, (err, chkres, fields) => {
         if (!err){
-            if(rows.length==1){
-                if(rows[0].password==password){
+            if(chkres.length==1){
+                if(chkres[0].password==password){
+                    console.log(chkres[0].user_id);
+                    user_id=chkres[0].user_id;
                     // res.send("successful login");
                     req.flash("success","Login Successful!");
-                    //to redirect after login (To show alert it is compulsory to include this)
-                   return res.redirect("/login");
-
+                    return res.redirect("/");
                 }else{
-                    //res.send("wrong password");//ALERT
                     req.flash("error","Wrong Password/Email");
                     return res.redirect("/login");
                     
                 }
-            }else if(rows.length==0){
-                //res.send("No such user found");//ALERT
-                req.flash("error","No User Found!!Please register yourself.");
-               return  res.redirect("/login");
-                
+            }else if(chkres.length==0){
+                req.flash("error","No User Found! Please sign up first.");
+                return  res.redirect("/login");
             }else{
                 //res.send("Multiple users found");
                 return res.redirect("/login");
@@ -237,7 +270,7 @@ app.post("/pdetails", function(req, res){
     pname = req.body.name;
     pgender = req.body.gender;
     page = req.body.age;
-    var booking_id_tmp, user_id=1;
+    var booking_id_tmp;
     var ticket_id_tmp;
     var passenger_id_tmp;
     var inspassenger = "INSERT INTO passenger values";
@@ -253,7 +286,7 @@ app.post("/pdetails", function(req, res){
                         var inspassenger = "INSERT INTO passenger(ticket_id, name, gender, age) values(" + ticket_id_tmp + ",'" + pname.pop() + "','"  + pgender.pop() + "'," + page.pop() + ");";
                         mysqlConnection.query(inspassenger, (err, ticket_ins_output, fields) => {
                             if(!err){
-                                console.log(req.body);
+                                console.log("success");
                             }else
                             console.log(err)
                         });

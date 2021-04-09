@@ -4,23 +4,6 @@
     <title>Book Flight</title>
 </head>
 <body>
-        <!-- <div class="container">
-            <div class="signup-content">
-                <div class="signup-form">
-                    <h2 class="form-title">Search Flight</h2>
-                    
-                    <form method="POST" class="register-form" id="register-form" autocomplete="off">
-                        <div class="form-group">
-                            <label for="dept"></label>
-                            <input type="text" name="dept" id="dept" placeholder="From"/>
-                        </div>
-                        <div class="form-group form-button">
-                            <input type="submit" name="signup" id="signup" class="form-submit" value="Book"/>
-                        </div>
-                    </form>
-                </div>
-            </div>
-    </div> -->
     <div class="container">
         <section class="dashboard">
             <header class="booking-bar" style="background-color: HSL(var(--button-background-color, var(--color-orange)));">
@@ -38,9 +21,6 @@
               <!-- booking-bar__inputs -->
             </header>
           <section class="flights">
-            <header>
-              <p class="flights__total">183 <span>results</span></p>
-            </header>
             
             <section class="flights-list">
                 <%flights.forEach(function(flight){%>
@@ -79,7 +59,7 @@
                 </div>
                 <!-- /.flight-card__arrival -->
                 <div class="flight-card__action">
-                  <p class="flight-card__price styled-price">₹ <%= flight.fare %></p>
+                  <p class="flight-card__price styled-price">₹ <%= pcount*flight.fare %></p>
                   <br>
                   <button type="submit" name="flightno" id="form-submit" value=<%= flight.flight_id%> class="flight-card__cta button button--orange submit-form button ">Book</button>
 
