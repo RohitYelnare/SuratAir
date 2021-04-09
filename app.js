@@ -72,21 +72,14 @@ app.post("/booking", function(req, res){
     
     mysqlConnection.query(bookingquery, (err, bookingres, fields) => {
         if (!err){
-            // console.log("bookingres.length");
-            // console.log(bookingres.length);
             for(var i=0; i<bookingres.length; i++){
-                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, f.route_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=" + user_id + " and f.flight_id=t.flight_id and b.booking_id=" + bookingres[i].booking_id + " and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
-                // console.log(bookingres[i].booking_id);
+                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, t.ticket_id, f.route_id, f.flight_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=" + user_id + " and f.flight_id=t.flight_id and b.booking_id=" + bookingres[i].booking_id + " and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
                 bookingsoutput.push(bookingres[i]);
                 mysqlConnection.query(ticketsquery, (err, ticketsres, fields) => {
                     if (!err){
                         ticketsoutput.push(ticketsres);
                         console.log("ticketsoutput");
                         console.log(ticketsoutput);
-                        // console.log("ticketsoutput0");
-                        // console.log(ticketsoutput[0]);
-                        // console.log("ticketsoutput1");
-                        // console.log(ticketsoutput[1]);
                     }else
                     console.log(err);
                 });
@@ -105,6 +98,17 @@ app.get("/tickets", function(req, res){
     console.log(ticketsoutput[1][1].name);
     console.log(ticketsoutput[3][3].name);
     res.render("tickets", {bookingsoutput: bookingsoutput, ticketsoutput: ticketsoutput});
+});
+
+app.post("/tickets", function(req, res){
+    var del_ticket_id=req.body.ticketid;
+    var delticketquery = "delete from ticket where ticket_id=" + del_ticket_id + ";";
+    mysqlConnection.query(delticketquery, (err, delticketres, fields) => {
+        if (!err){
+            res.send(delticketres);
+        }else
+            console.log(err);
+    });
 });
 
 app.get("/signup", function(req, res){
