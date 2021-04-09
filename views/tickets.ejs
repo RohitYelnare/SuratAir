@@ -23,24 +23,26 @@
 
 <body>
     <div class="container">
-            <%for (var i=0; i<ticketsoutput.length; i++){%>
+            <%for (var i=0; i<bookingsoutput.length; i++){%>
+            <p>Booked on <%=bookingsoutput[i].booking_timestamp.toString().substring(0,15)%></p>
             <div class="row d-flex justify-content-center">
                 
-                <div class="card-group col-lg-8">
+                <div class="card-group">
                 <%for (var j=0; j<ticketsoutput[i].length; j++){%>
-                <div class="card">
-                    <!-- <img src="..." class="card-img-top" alt="..."> -->
-                    <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
+                <div class="card col-lg-12">
+                    <div class="card-body w-30">
+                        <h5 class="card-title"><%=ticketsoutput[i][j].name%>-<%=ticketsoutput[i][j].name%></h5>
                         <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
                     </div>
-                    <div class="card-footer">
+                    <!-- <div class="card-footer">
                         <small class="text-muted">Last updated 3 mins ago</small>
-                    </div>
+                    </div> -->
                 </div>
                 <%}%>
             </div>
         </div>
+        <br>
+        <br>
         <%}%>
     </div>
 </div>
