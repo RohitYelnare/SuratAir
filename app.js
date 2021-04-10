@@ -4,7 +4,9 @@ const mysql = require("mysql2");
 const { response } = require("express");
 var flash=require("connect-flash");
 const bcrypt=require("bcrypt");
-
+var localStorage = require('localStorage');
+// const LocalStorage = require('node-localstorage').LocalStorage,
+// localStorage = new LocalStorage('./scratch');
 const app = express();
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
@@ -55,14 +57,14 @@ app.get("/", function(req, res){
         }else
             console.log(err);
     });
-    res.redirect("search");
+    res.redirect("login");
 });
+
+// app.get("/booking", function(req, res){
+//     res.render("booking");
+// });
 
 app.get("/booking", function(req, res){
-    res.render("booking");
-});
-
-app.post("/booking", function(req, res){
     user_id=req.body.userid;
     bookingsoutput=[], ticketsoutput=[];
     console.log("user_id");
@@ -73,7 +75,7 @@ app.post("/booking", function(req, res){
     mysqlConnection.query(bookingquery, (err, bookingres, fields) => {
         if (!err){
             for(var i=0; i<bookingres.length; i++){
-                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, t.ticket_id, f.route_id, f.flight_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=" + user_id + " and f.flight_id=t.flight_id and b.booking_id=" + bookingres[i].booking_id + " and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
+                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, t.ticket_id, f.route_id, f.flight_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=" + localStorage.getItem('suratair_user_id') + " and f.flight_id=t.flight_id and b.booking_id=" + bookingres[i].booking_id + " and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
                 bookingsoutput.push(bookingres[i]);
                 mysqlConnection.query(ticketsquery, (err, ticketsres, fields) => {
                     if (!err){
@@ -91,7 +93,9 @@ app.post("/booking", function(req, res){
 })
 
 app.get("/tickets", function(req, res){
-    res.render("tickets", {bookingsoutput: bookingsoutput, ticketsoutput: ticketsoutput});
+    setTimeout((() => {
+        res.render("tickets", {bookingsoutput: bookingsoutput, ticketsoutput: ticketsoutput});
+    }), 2000)
 });
 
 app.post("/tickets", function(req, res){
@@ -113,20 +117,21 @@ app.post("/signup", function(req, res){
     const name = req.body.name;
     const email = req.body.email;
     const mobile = req.body.mobile;
+    var admin = (req.body.isAdmin=='on')?1:0;
     var password = req.body.password;
     const saltRounds=bcrypt.genSalt(20);
-   
+    console.log("admin");
+    console.log(admin);
     //hashing the password;
     bcrypt.genSalt(10, function(err, salt) {
         if (err) return callback(err);
     
         bcrypt.hash(password, salt, function(err, hash) {
             password = hash;
-             const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
-             const insquery = "INSERT INTO user (name, email, mobile, password) values('" + name + "', '" + email + "'," + mobile + ",'" + password + "')";
-            
+            const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
+            const insquery = "INSERT INTO user (name, email, mobile, password, admin) values('" + name + "', '" + email + "'," + mobile + ",'" + password + "'," + admin + ");";
 
-             mysqlConnection.query(chkquery, (err, chkres, fields) => {
+            mysqlConnection.query(chkquery, (err, chkres, fields) => {
                 if (!err){
                     if(chkres.length==0){
                         mysqlConnection.query(insquery, (err, insres, fields) => {
@@ -135,7 +140,7 @@ app.post("/signup", function(req, res){
                                 user_id=insres.insertId;
                                // res.send("successfully registered");
                                 req.flash("success","Registrstion Successful!! To continue please login first.");
-                                res.redirect("/");
+                                res.redirect("/search");
                             }
                                 else
                                 console.log(err);
@@ -163,8 +168,6 @@ app.post("/login", function(req, res){
     const password = req.body.password;
     var flag;
     const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
-    // console.log(email);
-    // console.log(password);
     
     mysqlConnection.query(chkquery, (err, chkres, fields) => {
         if (!err){
@@ -177,9 +180,10 @@ app.post("/login", function(req, res){
                         flag=false;
                     }
                 });
-                if(!flag){                                                       //chkres[0].password==password
+                if(!flag){
                     console.log(chkres[0].user_id);
                     user_id=chkres[0].user_id;
+                    localStorage.setItem('suratair_user_id',1);
                     // res.send("successful login");
                     req.flash("success","Login Successful!");
                     return res.redirect("/");
@@ -204,8 +208,9 @@ app.post("/login", function(req, res){
 })
 
 app.get("/search", function(req, res){
-
-    res.render("search", {destinationsfound:destinationsfound});
+    setTimeout((() => {
+        res.render("search", {destinationsfound:destinationsfound});
+    }), 2000)
 })
 
 app.post("/search", function(req, res){
@@ -222,7 +227,6 @@ app.post("/search", function(req, res){
             }else{
                 flightsfound=flights;
                 flightsfound.forEach((flight)=>flight_dur.push(time_diff (flight.arr_time, flight.dept_time)));
-                console.log(flight_dur);
                 res.redirect("flights");
             }
         }
@@ -262,7 +266,6 @@ app.get("/flights", function(req, res){
 });
 
 app.post("/flights", function(req, res){
-    console.log(req.body);
     // const query = "SELECT ac.capacity FROM fleet ac, flight f WHERE f.aircraft_id=ac.aircraft_id AND f.flight_id=" + req.body.flightno + ";";
     flight_id_tmp = req.body.flightno;
     const occupied_query = "SELECT seat_no FROM ticket t WHERE flight_id=" + flight_id_tmp + ";";
@@ -349,7 +352,6 @@ function time_sec(sec)                                //seconds->HH:MM:SS
           var result = (hrs < 10 ? "0" + hrs : hrs);
           result += ":" + (min < 10 ? "0" + min : min);
           result += ":" + (seconds < 10 ? "0" + seconds : seconds);
-          console.log(result);
           return result;
         }
 
@@ -359,10 +361,7 @@ function time_sec(sec)                                //seconds->HH:MM:SS
         var b=  t2.split(':');
         var s1 = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
         var s2 = (+b[0]) * 60 * 60 + (+b[1]) * 60 + (+b[2]); 
-        console.log(s1);
-        console.log(s2);
         var SECONDS=s1-s2;
         var time=time_sec(SECONDS);
-        console.log(time);
         return time;
       }

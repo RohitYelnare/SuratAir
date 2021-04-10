@@ -16,7 +16,9 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "js-alert": "^1.0.4",
+    "localStorage": "^1.0.4",
     "mysql2": "^2.2.5",
+    "node-localstorage": "^2.1.6",
     "popup": "0.0.3",
     "popups": "^1.1.3"
   }
