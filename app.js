@@ -12,7 +12,7 @@ app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-var flightsfound,destinationsfound,flight_id_tmp, user_id, seat_tmp=[], pcount=[],pname=[], 
+var flightsfound,destinationsfound,flight_id_tmp, user_id, isUseradmin, seat_tmp=[], pcount=[],pname=[], 
 pgender=[],occupied=[], page=[], flight_dur=[], bookingsoutput=[], ticketsoutput=[];
 
 app.use(require("express-session")({
@@ -49,7 +49,7 @@ mysqlConnection.connect((err)=> {
 
 app.get("/", function(req, res){
     const query = "SELECT city, country FROM airport;";
-
+    console.log(user_id);
     mysqlConnection.query(query, (err, destinations, fields) => {
         if (!err){
             destinationsfound=destinations;
@@ -57,7 +57,13 @@ app.get("/", function(req, res){
         }else
             console.log(err);
     });
-    res.redirect("login");
+    if(user_id===undefined){
+        res.redirect("login");
+    }else if(isUseradmin==0){
+        res.redirect("search");
+    }else{
+        res.redirect("admin");
+    }
 });
 
 // app.get("/booking", function(req, res){
@@ -118,6 +124,7 @@ app.post("/signup", function(req, res){
     const email = req.body.email;
     const mobile = req.body.mobile;
     var admin = (req.body.isAdmin=='on')?1:0;
+    isUseradmin = (req.body.isAdmin=='on')?1:0;
     var password = req.body.password;
     const saltRounds=bcrypt.genSalt(20);
     console.log("admin");
@@ -140,7 +147,7 @@ app.post("/signup", function(req, res){
                                 user_id=insres.insertId;
                                // res.send("successfully registered");
                                 req.flash("success","Registrstion Successful!! To continue please login first.");
-                                res.redirect("/search");
+                                res.redirect("/");
                             }
                                 else
                                 console.log(err);
@@ -166,6 +173,7 @@ app.get("/login", function(req, res){
 app.post("/login", function(req, res){
     const email = req.body.email;
     const password = req.body.password;
+    isUseradmin = (req.body.isAdmin=='on')?1:0;
     var flag;
     const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
     
