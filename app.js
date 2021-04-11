@@ -4,9 +4,6 @@ const mysql = require("mysql2");
 const { response } = require("express");
 var flash=require("connect-flash");
 const bcrypt=require("bcrypt");
-var localStorage = require('localStorage');
-// const LocalStorage = require('node-localstorage').LocalStorage,
-// localStorage = new LocalStorage('./scratch');
 const app = express();
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
@@ -81,7 +78,6 @@ app.get("/booking", function(req, res){
     mysqlConnection.query(bookingquery, (err, bookingres, fields) => {
         if (!err){
             for(var i=0; i<bookingres.length; i++){
-                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, t.ticket_id, f.route_id, f.flight_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=" + localStorage.getItem('suratair_user_id') + " and f.flight_id=t.flight_id and b.booking_id=" + bookingres[i].booking_id + " and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
                 bookingsoutput.push(bookingres[i]);
                 mysqlConnection.query(ticketsquery, (err, ticketsres, fields) => {
                     if (!err){
@@ -189,16 +185,17 @@ app.post("/login", function(req, res){
                     }
                 });
                 if(!flag){
-                    console.log(chkres[0].user_id);
-                    user_id=chkres[0].user_id;
-                    localStorage.setItem('suratair_user_id',1);
-                    // res.send("successful login");
-                    req.flash("success","Login Successful!");
-                    return res.redirect("/");
+                    if(isUseradmin==chkres[0].admin){
+                        user_id=chkres[0].user_id;
+                        req.flash("success","Login Successful!");
+                        return res.redirect("/");
+                    }else{
+                        req.flash("error","Incorrect information entered");
+                        return res.redirect("/login");
+                    }
                 }else{
                     req.flash("error","Wrong Password/Email");
                     return res.redirect("/login");
-                    
                 }
                 
             }else if(chkres.length==0){
