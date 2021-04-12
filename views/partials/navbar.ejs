@@ -1,0 +1,18 @@
+<%if (user_id===undefined){%>
+    <div class="container-fluid" style="background-color: rgb(48, 63, 84);">
+        <div style="float: left;"><img src="img/logo.jpg" width="69"></div>
+        <div style="width: 30%; margin-right: 0%; position: relative; float: right; margin-top: 1%;">
+            <div style="float: right;"><a href="/login" class="btn btn-sm active" style="background-color: darkorange;" role="button" aria-pressed="true">Login</a></div>
+        </div>
+    </div>
+<%}else{%>
+    <div class="container-fluid" style="background-color: rgb(48, 63, 84);">
+        <div style="float: left;"><img src="img/logo.jpg" width="69"></div>
+        <div style="width: 30%; margin-right: 0%; position: relative; float: right; margin-top: 1%;">
+            <div style="float: left;"><a class="btn btn-lg" style="color: darkorange;  font-size: 1.7rem;">Welcome, <%=user_name%></a></div>
+            <div style="float: right;"><a href="/login" class="btn btn-sm active" style="background-color: darkorange;" role="button" aria-pressed="true">Logout</a></div>
+            <div style="float: right;">&ensp;&ensp;&ensp;&ensp;</div>
+            <div style="float: right;"><a href="/booking" class="btn btn-sm active" style="background-color: darkorange;" role="button" aria-pressed="true">My Tickets</a></div>
+        </div>
+    </div>
+<%}%>

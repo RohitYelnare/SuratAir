@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <link rel="stylesheet" href="css/ticket.css">
 
-    <title>Book Flight</title>
+    <title>My tickets</title>
 </head>
 <body>
 
@@ -22,16 +22,16 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container-fluid">
             <%for (var i=0; i<bookingsoutput.length; i++){%>
                 <%if(ticketsoutput[i].length>0){%>
-            <h4>Booked on <%=bookingsoutput[i].booking_timestamp.toString().substring(0,15)%></h4>
+            <h4 style="text-align: center;">Booked on <%=bookingsoutput[i].booking_timestamp.toString().substring(0,15)%></h4>
             <div class="row d-flex justify-content-center">
                 
-                <div class="card-group">
+                <div class="card-group d-flex justify-content-center">
                     <%for (var j=0; j<ticketsoutput[i].length; j++){%>
                     
-                    <div class="card">
+                    <div class="card" style="max-width: 33%; min-width: 33%;">
                         <div class="card-body">
                             <h4 class="card-title"><%=ticketsoutput[i][j].dept_code%> <i class="fas fa-plane-departure" aria-hidden="true"></i> <%=ticketsoutput[i][j].arr_code%></h4>
                             <h5 class="float-start">NAME: <%=ticketsoutput[i][j].name%></h5>

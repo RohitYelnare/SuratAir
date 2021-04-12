@@ -9,7 +9,7 @@ app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-var flightsfound,destinationsfound,flight_id_tmp, user_id, isUseradmin, seat_tmp=[], pcount=[],pname=[], 
+var flightsfound,destinationsfound,flight_id_tmp, user_id, user_name, isUseradmin, seat_tmp=[], pcount=[],pname=[], 
 pgender=[],occupied=[], page=[], flight_dur=[], bookingsoutput=[], ticketsoutput=[];
 
 app.use(require("express-session")({
@@ -63,22 +63,18 @@ app.get("/", function(req, res){
     }
 });
 
-// app.get("/booking", function(req, res){
-//     res.render("booking");
-// });
-
 app.get("/booking", function(req, res){
-    user_id=req.body.userid;
+    user_id=1;
     bookingsoutput=[], ticketsoutput=[];
     console.log("user_id");
     console.log(user_id);
     var bookingquery = "select * from booking where user_id =" + user_id + ";";
-    // var ticketquery = "select * from booking where user_id =" + user_id + ";";
     
     mysqlConnection.query(bookingquery, (err, bookingres, fields) => {
         if (!err){
             for(var i=0; i<bookingres.length; i++){
                 bookingsoutput.push(bookingres[i]);
+                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, t.ticket_id, f.route_id, f.flight_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=" + user_id + " and f.flight_id=t.flight_id and b.booking_id=" + bookingres[i].booking_id + " and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
                 mysqlConnection.query(ticketsquery, (err, ticketsres, fields) => {
                     if (!err){
                         ticketsoutput.push(ticketsres);
@@ -102,10 +98,12 @@ app.get("/tickets", function(req, res){
 
 app.post("/tickets", function(req, res){
     var del_ticket_id=req.body.ticketid;
+    console.log("del_ticket_id");
+    console.log(del_ticket_id);
     var delticketquery = "delete from ticket where ticket_id=" + del_ticket_id + ";";
     mysqlConnection.query(delticketquery, (err, delticketres, fields) => {
         if (!err){
-            res.send(delticketres);
+            res.redirect("booking");
         }else
             console.log(err);
     });
@@ -117,6 +115,7 @@ app.get("/signup", function(req, res){
 
 app.post("/signup", function(req, res){
     const name = req.body.name;
+    user_name=name;
     const email = req.body.email;
     const mobile = req.body.mobile;
     var admin = (req.body.isAdmin=='on')?1:0;
@@ -187,6 +186,7 @@ app.post("/login", function(req, res){
                 if(!flag){
                     if(isUseradmin==chkres[0].admin){
                         user_id=chkres[0].user_id;
+                        user_name=chkres[0].name;
                         req.flash("success","Login Successful!");
                         return res.redirect("/");
                     }else{
@@ -212,9 +212,15 @@ app.post("/login", function(req, res){
 
 })
 
+app.get("/logout", function(req, res){
+    user_id=undefined;
+    user_name=undefined;
+    res.redirect("/login");
+})
+
 app.get("/search", function(req, res){
     setTimeout((() => {
-        res.render("search", {destinationsfound:destinationsfound});
+        res.render("search", {destinationsfound:destinationsfound, user_id:user_id, user_name: user_name});
     }), 2000)
 })
 
@@ -238,7 +244,6 @@ app.post("/search", function(req, res){
             else
             console.log(err);
     });
-
 
 });
 
