@@ -9,7 +9,7 @@ app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-var flightsfound,destinationsfound,flight_id_tmp, user_id, plistres, user_name, isUseradmin, seat_tmp=[], pcount=[],pname=[], 
+var adminallflights,flightsfound,destinationsfound,flight_id_tmp, user_id, plistres, user_name, isUseradmin, seat_tmp=[], pcount=[],pname=[], 
 pgender=[],occupied=[], page=[], flight_dur=[], bookingsoutput=[], ticketsoutput=[];
 
 app.use(require("express-session")({
@@ -229,10 +229,24 @@ app.get("/logout", function(req, res){
 })
 
 app.get("/admin", function(req, res){
-    res.render("admin");
+    var allflightsquery = "SELECT * FROM flight";
+    mysqlConnection.query(allflightsquery, (err, allflights, fields) => {
+        if (!err){
+            adminallflights=allflights;
+            res.redirect("/adminallflights");
+        }
+        else
+        console.log(err);
+    });
 })
 
-app.post("/admin", function(req, res){
+app.get("/adminallflights", function(req, res){
+    setTimeout((() => {
+        res.render("admin", {adminallflights:adminallflights});
+    }), 1500);
+})
+
+app.post("/adminallflights", function(req, res){
     var flightreq = req.body.flightid;
     var plistview = "CREATE OR REPLACE VIEW passengerlist AS SELECT name, age, gender, seat_no FROM passenger INNER JOIN ticket ON ticket.ticket_id=passenger.ticket_id WHERE flight_id=" + flightreq + " ORDER BY seat_no;";
     var plistquery = "SELECT * FROM passengerlist;";
@@ -254,13 +268,15 @@ app.post("/admin", function(req, res){
 
 app.get("/plist", function(req, res){
     res.render("plist", {plistres:plistres});
-
 })
 
 app.get("/search", function(req, res){
+    if(user_id===undefined){
+        res.redirect("login");
+    }else{
     setTimeout((() => {
         res.render("search", {destinationsfound:destinationsfound, user_id:user_id, user_name: user_name});
-    }), 2000)
+    }), 2000);}
 })
 
 app.post("/search", function(req, res){
@@ -273,7 +289,8 @@ app.post("/search", function(req, res){
     mysqlConnection.query(query, (err, flights, fields) => {
         if (!err){
             if(flights.length==0){
-                res.send("no flights found");
+                // res.send("no flights found");
+                res.redirect("noflights");
             }else{
                 flightsfound=flights;
                 flightsfound.forEach((flight)=>flight_dur.push(time_diff (flight.arr_time, flight.dept_time)));
@@ -309,6 +326,10 @@ app.post("/search", function(req, res){
 // });
 
 //
+
+app.get("/noflights", function(req, res){
+    res.render("noflights");
+});
 
 app.get("/flights", function(req, res){
     res.render("flights", {flights: flightsfound, pcount:pcount, flight_dur:flight_dur});
@@ -356,30 +377,35 @@ app.post("/pdetails", function(req, res){
     var passenger_id_tmp;
     var inspassenger = "INSERT INTO passenger values";
     var insbooking = "INSERT INTO booking (user_id, booking_timestamp) values(" + user_id + ",CURRENT_TIMESTAMP());";
-    mysqlConnection.query(insbooking, (err, booking_ins_output, fields) => {
-        if (!err){
-            booking_id_tmp = booking_ins_output.insertId;
-            for(var j=0; j<pcount; j++){
-                var insticket = "INSERT INTO ticket(booking_id, flight_id, seat_no) values(" + booking_id_tmp + "," + flight_id_tmp + "," + seat_tmp.pop() + ");";
-                mysqlConnection.query(insticket, (err, ticket_ins_output, fields) => {
-                    if(!err){
-                        ticket_id_tmp = ticket_ins_output.insertId;
-                        var inspassenger = "INSERT INTO passenger(ticket_id, name, gender, age) values(" + ticket_id_tmp + ",'" + pname.pop() + "','"  + pgender.pop() + "'," + page.pop() + ");";
-                        mysqlConnection.query(inspassenger, (err, ticket_ins_output, fields) => {
-                            if(!err){
-                                console.log("success");
-                            }else
-                            console.log(err)
-                        });
-                    }else
-                    console.log(err)
-                })
-            }
-
-        }else
-        console.log(err);
-    });
-    
+    if(user_id===undefined){
+        res.redirect("login");
+    }else{
+        mysqlConnection.query(insbooking, (err, booking_ins_output, fields) => {
+            if (!err){
+                booking_id_tmp = booking_ins_output.insertId;
+                for(var j=0; j<pcount; j++){
+                    var insticket = "INSERT INTO ticket(booking_id, flight_id, seat_no) values(" + booking_id_tmp + "," + flight_id_tmp + "," + seat_tmp.pop() + ");";
+                    mysqlConnection.query(insticket, (err, ticket_ins_output, fields) => {
+                        if(!err){
+                            ticket_id_tmp = ticket_ins_output.insertId;
+                            var inspassenger = "INSERT INTO passenger(ticket_id, name, gender, age) values(" + ticket_id_tmp + ",'" + pname.pop() + "','"  + pgender.pop() + "'," + page.pop() + ");";
+                            mysqlConnection.query(inspassenger, (err, ticket_ins_output, fields) => {
+                                if(!err){
+                                    console.log("success");
+                                }else
+                                console.log(err)
+                            });
+                        }else
+                        console.log(err)
+                    })
+                }
+                
+            }else
+            console.log(err);
+        });
+        res.redirect("search");
+        
+    }
 });
 
 let port = process.env.PORT;

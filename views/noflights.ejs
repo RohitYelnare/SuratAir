@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+<link rel="stylesheet" href="css/flights.css">
+
+    <title>Book Flight</title>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+
+    <div class="container">
+        <section class="dashboard">
+          <section class="flights">
+            <h2>No flights found</h2>
+            <a href="/search">Search for a different day/destination</a>
+          </section>
+    
+          <aside class="sidebar">
+            <!-- <section class="sidebar-section">
+              <button class="button button--purple sidebar__action">Get price alerts</button>
+            </section> -->
+            <!-- /.sidebar-section -->
+            
+            <section class="sidebar-section">
+              <h2 class="sidebar-section__heading">Our covid-19 travel waiver policy provides:</h2>
+              <ul class="choice-list">
+                <li class="choice-list__item">
+                  <label >- Zero cancellation charges</label>
+                </li>
+                <li class="choice-list__item">
+                  <p >*Valid for ticket purchases on and before 30th April 2021</p>
+                </li>
+              </ul>
+            </section>
+          </aside>
+        </section>
+        <!-- /.dashboard -->
+      </div>
+
+<%- include('partials/footer') %>
