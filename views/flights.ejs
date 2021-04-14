@@ -23,25 +23,25 @@
           <section class="flights">
             
             <section class="flights-list">
-                <%flights.forEach(function(flight){%>
+                <%for(var i=0; i<flights.length; i++){%>
                     <form method="POST" class="register-form" id="register-form" autocomplete="off">
               <article class="flight-card flights-list__item">
                 <div class="flight-card__airlines">
             <p>SA</p>
-            <p name="flightno"><%= flight.flight_id %></p>
+            <p name="flightno"><%= flights[i].flight_id %></p>
                     
                   <!-- /.flight-card__airline -->
                 </div>
                 <!-- /.flight-card__airlines -->
                 <div class="flight-card__departure">
-                  <time class="flight-card__time"><%=flight.dept_time.toString().substr(0,5)%></time>
-                  <h2 class="flight-card__city"><%=flight.dept_city%> (<%=flight.dept_code%>)</h2>
-                  <time class="flight-card__day"><%=flight.dept_name%></time><br>
-                  <!-- <time class="flight-card__day"><%=flight.dept_date%></time> -->
+                  <time class="flight-card__time"><%=flights[i].dept_time.toString().substr(0,5)%></time>
+                  <h2 class="flight-card__city"><%=flights[i].dept_city%> (<%=flights[i].dept_code%>)</h2>
+                  <time class="flight-card__day"><%=flights[i].dept_name%></time><br>
+                  <!-- <time class="flight-card__day"><%=flights[i].dept_date%></time> -->
                 </div>
                 <!-- /.flight-card__departure -->
                 <div class="flight-card__route">
-                  <p class="flight-card__duration"><%=flight_dur[0].slice(0,-3) %></p>
+                  <p class="flight-card__duration"><%=flight_dur[i] %></p>
                   <div class="flight-card__route-line route-line" aria-hidden="true">
                     <div class="route-line_stop route-line_start" aria-hidden="true"></div>
                     <!-- /.route-line__start -->
@@ -52,16 +52,16 @@
                   <p class="flight-card__type">Non-stop</p>
                 </div>
                 <div class="flight-card__arrival">
-                  <time class="flight-card__time"><%= flight.arr_time.toString().substr(0,5) %></time>
-                  <h2 class="flight-card__city"><%=flight.arr_city%> (<%=flight.arr_code%>)</h2>
-                  <time class="flight-card__day"><%=flight.arr_name%></time><br>
-                  <!-- <time class="flight-card__day"><%= flight.dept_date %></time> -->
+                  <time class="flight-card__time"><%= flights[i].arr_time.toString().substr(0,5) %></time>
+                  <h2 class="flight-card__city"><%=flights[i].arr_city%> (<%=flights[i].arr_code%>)</h2>
+                  <time class="flight-card__day"><%=flights[i].arr_name%></time><br>
+                  <!-- <time class="flight-card__day"><%= flights[i].dept_date %></time> -->
                 </div>
                 <!-- /.flight-card__arrival -->
                 <div class="flight-card__action">
-                  <p class="flight-card__price styled-price">₹ <%= pcount*flight.fare %></p>
+                  <p class="flight-card__price styled-price">₹ <%= pcount*flights[i].fare %></p>
                   <br>
-                  <button type="submit" name="flightno" id="form-submit" value=<%= flight.flight_id%> class="flight-card__cta button button--orange submit-form button ">Book</button>
+                  <button type="submit" name="flightno" id="form-submit" value=<%= flights[i].flight_id%> class="flight-card__cta button button--orange submit-form button ">Book</button>
 
                   <!-- <button class="flight-card__cta button button--orange">Select</button> -->
                 </div>
@@ -69,7 +69,7 @@
               </article>
             </form>
             <br>
-            <%})%>
+            <%}%>
             </section>
     
           </section>

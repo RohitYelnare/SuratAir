@@ -1,0 +1,58 @@
+<%- include('partials/header') %>
+<link rel="stylesheet" href="css/ticket.css">
+
+    <title>Book Flight</title>
+</head>
+<body>
+
+    <div class="main">
+
+        <!-- Sign up form -->
+        
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+  
+  
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+    <form method="POST">
+        <input type="number" name="flightid">
+        <input type="submit" value="show passengers">
+    </form>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Seat No.</th>
+            <th scope="col">Name</th>
+            <th scope="col">Age</th>
+            <th scope="col">Gender</th>
+          </tr>
+        </thead>
+        <tbody>
+        <%for(var i=0; i<plistres.length; i++){%>
+            <tr>
+                <th scope="row"><%=plistres[i].seat_no%></th>
+                <td><%=plistres[i].name%></td>
+                <td><%=plistres[i].age%></td>
+                <td><%=plistres[i].gender%></td>
+            </tr>
+        <%}%>
+        </tbody>
+      </table>
+  
+</body>
+</html>
+
+
+    <!-- JS -->
+    <!-- <script src="vendor/jquery/jquery.min.js"></script> -->
+    <!-- <script src="js/main.js"></script> -->
+
+<%- include('partials/footer') %>

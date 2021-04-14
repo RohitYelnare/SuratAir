@@ -9,7 +9,7 @@ app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-var flightsfound,destinationsfound,flight_id_tmp, user_id, user_name, isUseradmin, seat_tmp=[], pcount=[],pname=[], 
+var flightsfound,destinationsfound,flight_id_tmp, user_id, plistres, user_name, isUseradmin, seat_tmp=[], pcount=[],pname=[], 
 pgender=[],occupied=[], page=[], flight_dur=[], bookingsoutput=[], ticketsoutput=[];
 
 app.use(require("express-session")({
@@ -44,6 +44,16 @@ mysqlConnection.connect((err)=> {
         console.log('Connection Failed!'+ JSON.stringify(err,undefined,2));
 });
 
+app.get("/test", function(req, res){
+    var testproc = "CALL testfunc";
+    mysqlConnection.query(testproc, (err, output, fields) => {
+        if (!err){
+            res.send(output);
+        }else
+        console.log(err);
+    });
+});
+
 app.get("/", function(req, res){
     const query = "SELECT city, country FROM airport;";
     console.log(user_id);
@@ -64,7 +74,7 @@ app.get("/", function(req, res){
 });
 
 app.get("/booking", function(req, res){
-    user_id=1;
+    // user_id=1;
     bookingsoutput=[], ticketsoutput=[];
     console.log("user_id");
     console.log(user_id);
@@ -100,8 +110,8 @@ app.post("/tickets", function(req, res){
     var del_ticket_id=req.body.ticketid;
     console.log("del_ticket_id");
     console.log(del_ticket_id);
-    var delticketquery = "delete from ticket where ticket_id=" + del_ticket_id + ";";
-    mysqlConnection.query(delticketquery, (err, delticketres, fields) => {
+    var delprocedure = "CALL delticket("+del_ticket_id+")";
+    mysqlConnection.query(delprocedure, (err, delticketres, fields) => {
         if (!err){
             res.redirect("booking");
         }else
@@ -218,6 +228,35 @@ app.get("/logout", function(req, res){
     res.redirect("/login");
 })
 
+app.get("/admin", function(req, res){
+    res.render("admin");
+})
+
+app.post("/admin", function(req, res){
+    var flightreq = req.body.flightid;
+    var plistview = "CREATE OR REPLACE VIEW passengerlist AS SELECT name, age, gender, seat_no FROM passenger INNER JOIN ticket ON ticket.ticket_id=passenger.ticket_id WHERE flight_id=" + flightreq + " ORDER BY seat_no;";
+    var plistquery = "SELECT * FROM passengerlist;";
+    mysqlConnection.query(plistview, (err, viewres, fields) => {
+        if (!err){
+            mysqlConnection.query(plistquery, (err, output, fields) => {
+                if (!err){
+                    plistres=output;
+                    res.redirect("plist");
+                }
+                else
+                console.log(err);
+            });
+        }
+        else
+        console.log(err);
+    });
+})
+
+app.get("/plist", function(req, res){
+    res.render("plist", {plistres:plistres});
+
+})
+
 app.get("/search", function(req, res){
     setTimeout((() => {
         res.render("search", {destinationsfound:destinationsfound, user_id:user_id, user_name: user_name});
@@ -229,7 +268,7 @@ app.post("/search", function(req, res){
     const arr = req.body.arr;
     const date = req.body.date;
     pcount = req.body.pcount;
-    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r, flight f, airport a1, airport a2 WHERE  f.route_id=r.route_id AND r.dept_code=a1.code_id AND r.arr_code=a2.code_id AND f.dept_date='" + date + "' AND a1.city='" + dept +"' AND a2.city='" + arr + "';";
+    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r INNER JOIN flight f ON f.route_id=r.route_id INNER JOIN airport a1 ON r.dept_code=a1.code_id INNER JOIN airport a2 ON r.arr_code=a2.code_id WHERE f.dept_date='" + date + "' AND a1.city='" + dept + "' AND a2.city='" + arr + "';";
 
     mysqlConnection.query(query, (err, flights, fields) => {
         if (!err){
