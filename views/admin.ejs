@@ -26,33 +26,17 @@
         <input type="number" name="flightid">
         <input type="submit" value="show passengers">
     </form> -->
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Flight ID</th>
-            <th scope="col">Departure time</th>
-            <th scope="col">Arrival time</th>
-            <th scope="col">Fare</th>
-            <th scope="col">Seats_left</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-        <%for(var i=0; i<adminallflights.length; i++){%>
-            <tr>
-                <th scope="row"><%=adminallflights[i].flight_id%></th>
-                <td><%=adminallflights[i].dept_time%></td>
-                <td><%=adminallflights[i].arr_time%></td>
-                <td><%=adminallflights[i].fare%></td>
-                <td><%=adminallflights[i].seats_left%></td>
-                <form method="POST">
-                <input name="flightid" style="display: none;" value="<%=adminallflights[i].flight_id%>">
-                <td><input type="submit" value="show passengers"></td>
-                </tr>
-            </form>
-        <%}%>
-        </tbody>
-      </table>
+        <form method="POST">
+            <a href="/adminallflights">showallflights</a>
+            <br>
+            <a href="/addairport">addairport</a>
+            <br>
+            <a href="/addroute">addroute</a>
+            <br>
+            <a href="/addaircraft">addaircraft</a>
+            <br>
+            <a href="/addflight">addflight</a>
+        </form>
 </body>
 </html>
 

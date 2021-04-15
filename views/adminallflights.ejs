@@ -1,0 +1,70 @@
+<%- include('partials/header') %>
+<link rel="stylesheet" href="css/ticket.css">
+
+    <title>Book Flight</title>
+</head>
+<body>
+
+    <div class="main">
+
+        <!-- Sign up form -->
+        
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+  
+  
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+    <!-- <form method="POST">
+        <input type="number" name="flightid">
+        <input type="submit" value="show passengers">
+    </form> -->
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Flight ID</th>
+            <th scope="col"><i class="fas fa-plane-departure"></i></th>
+            <th scope="col"><i class="fas fa-plane-arrival"></i></th>
+            <th scope="col"><i class="fas fa-calendar-day"></i></th>
+            <th scope="col">Departure <i class="fas fa-clock"></i></th>
+            <th scope="col">Arrival <i class="fas fa-clock"></i></th>
+            <th scope="col"><i class="fas fa-rupee-sign"></th>
+            <th scope="col">Seats left</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+        <%for(var i=0; i<adminallflights.length; i++){%>
+            <tr>
+                <th scope="row"><%=adminallflights[i].flight_id%></th>
+                <td><%=adminallflights[i].dept_code%></td>
+                <td><%=adminallflights[i].arr_code%></td>
+                <td><%=adminallflights[i].dept_date.toString().substring(0,15)%></td>
+                <td><%=adminallflights[i].dept_time.toString().substring(0,5)%></td>
+                <td><%=adminallflights[i].arr_time.toString().substring(0,5)%></td>
+                <td><%=adminallflights[i].fare%></td>
+                <td><%=adminallflights[i].seats_left%></td>
+                <form method="POST">
+                <input name="flightid" style="display: none;" value="<%=adminallflights[i].flight_id%>">
+                <td><input type="submit" value="show passengers"></td>
+                </tr>
+            </form>
+        <%}%>
+        </tbody>
+      </table>
+</body>
+</html>
+
+
+    <!-- JS -->
+    <!-- <script src="vendor/jquery/jquery.min.js"></script> -->
+    <!-- <script src="js/main.js"></script> -->
+
+<%- include('partials/footer') %>

@@ -229,11 +229,11 @@ app.get("/logout", function(req, res){
 })
 
 app.get("/admin", function(req, res){
-    var allflightsquery = "SELECT * FROM flight";
+    var allflightsquery = "SELECT * FROM flight INNER JOIN route ON flight.route_id=route.route_id";
     mysqlConnection.query(allflightsquery, (err, allflights, fields) => {
         if (!err){
             adminallflights=allflights;
-            res.redirect("/adminallflights");
+            res.render("admin");
         }
         else
         console.log(err);
@@ -242,7 +242,7 @@ app.get("/admin", function(req, res){
 
 app.get("/adminallflights", function(req, res){
     setTimeout((() => {
-        res.render("admin", {adminallflights:adminallflights});
+        res.render("adminallflights", {adminallflights:adminallflights});
     }), 1500);
 })
 
