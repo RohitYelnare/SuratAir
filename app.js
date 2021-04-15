@@ -227,18 +227,94 @@ app.get("/logout", function(req, res){
     user_name=undefined;
     res.redirect("/login");
 })
-
+var allairports;
 app.get("/admin", function(req, res){
     var allflightsquery = "SELECT * FROM flight INNER JOIN route ON flight.route_id=route.route_id";
+    var  displayairports="SELECT * from airport; ";
     mysqlConnection.query(allflightsquery, (err, allflights, fields) => {
         if (!err){
             adminallflights=allflights;
+            mysqlConnection.query(displayairports, (err, airportres, fields) => {
+                if (!err){
+                    allairports=airportres;
+                    
+                    res.render("admin");
+                }
+                else
+                console.log(err);
+            });
             res.render("admin");
         }
         else
         console.log(err);
     });
 })
+
+
+
+app.get("/addairport",function(req,res){
+    setTimeout((() => {
+        res.render("addairport",{allairports:allairports});
+    }), 1500);
+})
+
+app.post("/addairport",function(req,res){
+    var portId=req.body.airportId;
+    var portName=req.body.airportName;
+    var portCity=req.body.airportCity;
+    var portCountry=req.body.airportCountry;
+    
+    var addairportquery="INSERT INTO airport(code_id, city, name, country) VALUES(?,?,?,?);";
+    var checkCodeId="SELECT airport.code_id FROM airport WHERE ?=airport.code_id ;"
+    // mysqlConnection.query(checkCodeId,[portId,portId],(err, CodeId, fields) =>{
+    //     if(!err)
+    //     {
+           
+    //     }
+    //     else{
+    //         req.flash("error"," User Found! Please Add again.");
+    //             return  res.redirect("/addairport");
+    //     }
+    // })
+    mysqlConnection.query(addairportquery,[portId,portCity,portName,portCountry], (err, airports, fields) => {
+        if (!err){
+            //allairports=addairportquery;
+            res.render("admin");
+            console.log(airports);
+        }
+        else
+        console.log(err);
+    });
+    console.log(portId);
+})
+
+app.get("/addroute",function(req,res){
+    setTimeout((() => {
+        res.render("addroute",{allairports:allairports});
+    }), 2000);
+});
+
+app.post("/addroute",function(req,res){
+    var dept_port=req.body.airport_dept;
+    var arr_port=req.body.airport_arr;
+    var flag=[];
+    // var routeQuery="INSERT INTO route(dept_code,arr_code)VALUES(?,?);"
+    // var chkRoute="SELECT CASE WHEN EXISTS (SELECT route.dept_code,route.arr_code  FROM route WHERE route.dept_code =? and route.arr_code=?) THEN CAST(1 AS DECIMAL)ELSE CAST(0 AS DECIMAL) END"
+    
+    var addRoutequery="INSERT INTO route (route.dept_code,route.arr_code)SELECT * FROM (SELECT ?,?) AS tmp WHERE NOT EXISTS (SELECT route.dept_code,route.arr_code FROM route WHERE route.dept_code = ? and route.arr_code=?) LIMIT 1;"
+
+    mysqlConnection.query(addRoutequery,[dept_port,arr_port,dept_port,arr_port], (err, airports, fields) => {
+        if (!err){
+            req.flash("success","New route added");
+            res.render("admin");
+            console.log(airports);
+        }
+        else
+        console.log(err);
+    });
+
+})
+
 
 app.get("/adminallflights", function(req, res){
     setTimeout((() => {

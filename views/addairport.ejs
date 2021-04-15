@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+<link rel="stylesheet" href="css/ticket.css">
+
+    <title>Book Flight</title>
+</head>
+<body>
+
+    <div class="main">
+
+        <!-- Sign up form -->
+        
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+  
+  
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+    <!-- <form method="POST">
+        <input type="number" name="flightid">
+        <input type="submit" value="show passengers">
+    </form> -->
+    <% if(message.error) { %>
+		<div class="alert alert-danger" style="text-align: center;">
+			<%= message.error%>
+		</div>
+	<% } %>
+	<% if(message.success) { %>
+		<div class="alert alert-success" style="text-align: center;">
+			<%= message.success %>
+		</div>
+	<% } %>
+    
+      <table class="table">
+        <thead>
+          <tr>
+            <!-- <th scope="col">AIRPORT ID</th> -->
+            <th scope="col">AIRPORT<i class="fas fa-plane-departure"></i></th>
+            <th scope="col"><i class="fas fa-plane-arrival"></i></th>
+            <th scope="col"><i class="fas fa-calendar-day"></i></th>
+            <th scope="col">CITY <i class="fas fa-clock"></i></th>
+            <th scope="col">NAME<i class="fas fa-clock"></i></th>
+            <th scope="col"><i class="fas fa-rupee-sign"></th>
+            
+          </tr>
+        </thead>
+        <tbody>
+        <%for(var i=0; i<allairports.length; i++){%>
+            <tr>
+                <th scope="row"><%=allairports[i].flight_id%></th>
+                <td><%=allairports[i].code_id%></td>
+                <td><%=allairports[i].city%></td>
+                <td><%=allairports[i].name%></td>
+                <td><%=allairports[i].country%></td>
+        <%}%>
+        </tbody>
+      </table>
+        <form method="POST">
+            <input type="text" id="airport1" placeholder="code_id" name="airportId" maxlength="3" style="text-transform: uppercase"> 
+            <input type="text" id="airport1" placeholder="Name" name="airportName" maxlength="70" > 
+            <input type="text" id="airport1" placeholder="City" name="airportCity" maxlength="20" > 
+            <input type="text" id="airport1" placeholder="Country" name="airportCountry" maxlength="50" > 
+            <button type="submit" id="portsubmit" name="portsubmit">ADD AIRPORT</button>
+        </form>
+</body>
+</html>
+
+
+    <!-- JS -->
+    <!-- <script src="vendor/jquery/jquery.min.js"></script> -->
+    <!-- <script src="js/main.js"></script> -->
+
+<%- include('partials/footer') %>
