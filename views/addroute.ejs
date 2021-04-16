@@ -54,7 +54,7 @@
                                                     <% for (var i = 0; i < allairports.length; i++) { %>
                                                         
                                                         <option>
-                                                           <%= allairports[i].code_id %>
+                                                           <%= allairports[i].code_id %>, <%= allairports[i].city %>
                                                         </option>
                                                         <% } %>
             </select>
@@ -63,11 +63,11 @@
                             <% for (var i = 0; i < allairports.length; i++) { %>
                 
                                     <option>
-                                            <%= allairports[i].code_id %>
+                                            <%= allairports[i].code_id %>, <%= allairports[i].city %>
                                     </option>
                             <% } %>
             </select>
-            <button type="submit" id="portsubmit" name="portsubmit">ADD AIRPORT</button>
+            <button type="submit" id="portsubmit" name="portsubmit">ADD ROUTE</button>
         </form>
 </body>
 </html>

@@ -41,22 +41,18 @@
         <thead>
           <tr>
             <!-- <th scope="col">AIRPORT ID</th> -->
-            <th scope="col">AIRPORT<i class="fas fa-plane-departure"></i></th>
-            <th scope="col"><i class="fas fa-plane-arrival"></i></th>
-            <th scope="col"><i class="fas fa-calendar-day"></i></th>
-            <th scope="col">CITY <i class="fas fa-clock"></i></th>
-            <th scope="col">NAME<i class="fas fa-clock"></i></th>
-            <th scope="col"><i class="fas fa-rupee-sign"></th>
-            
+            <th scope="col">ICAO Code</i></th>
+            <th scope="col">Airport Name</th>
+            <th scope="col">City</th>
+            <th scope="col">Country</th>
           </tr>
         </thead>
         <tbody>
         <%for(var i=0; i<allairports.length; i++){%>
             <tr>
-                <th scope="row"><%=allairports[i].flight_id%></th>
                 <td><%=allairports[i].code_id%></td>
-                <td><%=allairports[i].city%></td>
                 <td><%=allairports[i].name%></td>
+                <td><%=allairports[i].city%></td>
                 <td><%=allairports[i].country%></td>
         <%}%>
         </tbody>

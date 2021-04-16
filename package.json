@@ -19,6 +19,7 @@
     "localStorage": "^1.0.4",
     "mysql2": "^2.2.5",
     "node-localstorage": "^2.1.6",
+    "nodemon": "^2.0.7",
     "popup": "0.0.3",
     "popups": "^1.1.3"
   }
