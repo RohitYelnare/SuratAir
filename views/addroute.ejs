@@ -48,6 +48,28 @@
 			<%= message.success %>
 		</div>
 	<% } %>
+
+    <table class="table">
+        <thead>
+          <tr>
+            <!-- <th scope="col">AIRPORT ID</th> -->
+            <th scope="col">Route Code</i></th>
+            <th scope="col">Departure Airport</th>
+            <th scope="col">Arrival Airport</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+        <%for(var i=0; i<allroutes.length; i++){%>
+            <tr>
+                <td><%=allroutes[i].route_id%></td>
+                <td><%=allroutes[i].dept_code%></td>
+                <td><%=allroutes[i].arr_code%></td>
+            </tr>
+                
+        <%}%>
+        </tbody>
+      </table>
         <form method="POST">
             <select type="text" id="airport1" placeholder="Departure" name="airport_dept" maxlength="3" style="text-transform: uppercase" onchange="updateSelect(this,'airport2')" > 
                     <option value="">Select a location...</option>
