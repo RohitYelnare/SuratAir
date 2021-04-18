@@ -1,0 +1,81 @@
+<%- include('partials/header') %>
+
+    <title>Book Flight</title>
+</head>
+<body>
+
+    <div class="main">
+
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+  
+  
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+      <table class="table">
+        <thead>
+          <tr>
+            <!-- <th scope="col">AIRPORT ID</th> -->
+            <th scope="col">Aircraft id</i></th>
+            <th scope="col">Type</th>
+            <th scope="col">Reg</th>
+            <th scope="col">Age</th>
+            <th scope="col">Capacity</th>
+            <th scope="col">Acquire date</th>
+            <th scope="col">isOwned</th>
+          </tr>
+        </thead>
+        <tbody>
+        <%for(var i=0; i<allfleet.length; i++){%>
+            <tr>
+                <td><%=allfleet[i].aircraft_id%></td>
+                <td><%=allfleet[i].type%></td>
+                <td><%=allfleet[i].reg%></td>
+                <td><%=allfleet[i].age%></td>
+                <td><%=allfleet[i].capacity%></td>
+                <td><%=allfleet[i].acquire_date.toString().substring(0,15)%></td>
+                <td><%=allfleet[i].isowned%></td>
+        <%}%>
+        </tbody>
+      </table>
+      <br>
+      <br>
+      <br>
+      <br>
+        <form method="POST">
+            <input type="text" name="type" value="B737 MAX-8" readonly> 
+            <br>
+            <br>
+            <input type="text" placeholder="Registration" name="reg" maxlength="10" required style="text-transform: uppercase"> 
+            <br>
+            <br>
+            <input type="number" placeholder="Age(in yrs)" name="age" min="0" required> 
+            <br>
+            <br>
+            <input type="number" name="capacity" value="180" readonly> 
+            <br>
+            <br>
+            <input type="date" name="acquiredate" required> 
+            <br>
+            <br>
+            Owned? <input type="checkbox" name="isowned"> 
+            <br>
+            <br>
+            <button type="submit" id="portsubmit" name="portsubmit">ADD AIRCRAFT</button>
+        </form>
+</body>
+</html>
+
+
+    <!-- JS -->
+    <!-- <script src="vendor/jquery/jquery.min.js"></script> -->
+    <!-- <script src="js/main.js"></script> -->
+
+<%- include('partials/footer') %>

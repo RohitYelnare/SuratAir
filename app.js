@@ -227,11 +227,12 @@ app.get("/logout", function(req, res){
     user_name=undefined;
     res.redirect("/login");
 })
-var allairports,allroutes;
+var allairports,allroutes,allfleet;
 app.get("/admin", function(req, res){
     var allflightsquery = "SELECT * FROM flight INNER JOIN route ON flight.route_id=route.route_id";
     var  displayairports="SELECT * from airport; ";
-    var displayroutes="SELECT * FROM route;"
+    var displayroutes="SELECT * FROM route;";
+    var displayfleet="SELECT * FROM fleet;";
     
     mysqlConnection.query(allflightsquery, (err, allflights, fields) => {
         if (!err){
@@ -242,19 +243,24 @@ app.get("/admin", function(req, res){
                     mysqlConnection.query(displayroutes, (err, airroutes, fields) => {
                         if (!err){
                             allroutes=airroutes;
-                            
-                            
+                            mysqlConnection.query(displayfleet, (err, aircrafts, fields) => {
+                                if (!err){
+                                    allfleet=aircrafts;
+                                    setTimeout((() => {
+                                        res.render("admin");
+                                    }), 2000)
+                                }
+                                else
+                                console.log(err);
+                            });
                         }
                         else
                         console.log(err);
                     });
-                    res.render("admin");
                 }
                 else
                 console.log(err);
             });
-            
-            res.render("admin");
         }
         else
         console.log(err);
@@ -313,19 +319,36 @@ app.post("/addroute",function(req,res){
     // var chkRoute="SELECT CASE WHEN EXISTS (SELECT route.dept_code,route.arr_code  FROM route WHERE route.dept_code =? and route.arr_code=?) THEN CAST(1 AS DECIMAL)ELSE CAST(0 AS DECIMAL) END"
     
     var addRoutequery="INSERT INTO route (route.dept_code,route.arr_code)SELECT * FROM (SELECT ?,?) AS tmp WHERE NOT EXISTS (SELECT route.dept_code,route.arr_code FROM route WHERE route.dept_code = ? and route.arr_code=?) LIMIT 1;"
-
+    
     mysqlConnection.query(addRoutequery,[dept_port,arr_port,dept_port,arr_port], (err, airports, fields) => {
         if (!err){
-            req.flash("success","New route added");
-            res.render("admin");
+            res.redirect("/admin");
             console.log(airports);
         }
         else
         console.log(err);
     });
-
+    
 })
 
+app.get("/addaircraft",function(req,res){
+    setTimeout((() => {
+        res.render("addaircraft",{allfleet:allfleet});
+    }), 2000);
+});
+
+app.post("/addaircraft",function(req,res){
+console.log(req.body);
+    var isowned=(req.body.isowned=='on')?1:0;
+    var insaircraft = "INSERT INTO fleet(type, reg, age, capacity, acquire_date, isowned) values('"+req.body.type+"','"+req.body.reg+"',"+req.body.age+","+req.body.capacity+",'"+req.body.acquiredate+"',"+isowned+");";
+    mysqlConnection.query(insaircraft, (err, insaircraftres, fields) => {
+        if (!err){
+            res.redirect("/admin");
+        }
+        else
+        console.log(err);
+    });
+});
 
 app.get("/adminallflights", function(req, res){
     setTimeout((() => {
