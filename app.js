@@ -272,7 +272,7 @@ app.get("/admin", function(req, res){
 app.get("/addairport",function(req,res){
     setTimeout((() => {
         res.render("addairport",{allairports:allairports});
-    }), 1500);
+    }), 2000);
 })
 
 app.post("/addairport",function(req,res){
@@ -318,16 +318,27 @@ app.post("/addroute",function(req,res){
     // var routeQuery="INSERT INTO route(dept_code,arr_code)VALUES(?,?);"
     // var chkRoute="SELECT CASE WHEN EXISTS (SELECT route.dept_code,route.arr_code  FROM route WHERE route.dept_code =? and route.arr_code=?) THEN CAST(1 AS DECIMAL)ELSE CAST(0 AS DECIMAL) END"
     
-    var addRoutequery="INSERT INTO route (route.dept_code,route.arr_code)SELECT * FROM (SELECT ?,?) AS tmp WHERE NOT EXISTS (SELECT route.dept_code,route.arr_code FROM route WHERE route.dept_code = ? and route.arr_code=?) LIMIT 1;"
+    //var addRoutequery="INSERT INTO route (route.dept_code,route.arr_code)SELECT * FROM (SELECT ?,?) AS tmp WHERE NOT EXISTS (SELECT route.dept_code,route.arr_code FROM route WHERE route.dept_code = ? and route.arr_code=?) LIMIT 1;"
     
-    mysqlConnection.query(addRoutequery,[dept_port,arr_port,dept_port,arr_port], (err, airports, fields) => {
-        if (!err){
-            res.redirect("/admin");
-            console.log(airports);
+    //var addRoutequery="INSERT  INTO route (route.dept_code,route.arr_code) SELECT ?,? FROM route WHERE NOT EXISTS (SELECT route.dept_code,route.arr_code FROM route WHERE dept_code = ? and arr_code=?) LIMIT 1;"
+    // mysqlConnection.query(addRoutequery,[dept_port,arr_port,dept_port,arr_port], (err, airoute, fields) => {
+    //     if (!err){
+    //         res.redirect("/admin");
+    //         console.log(addRoutequery);
+    //     }
+    //     else
+    //     console.log(err);
+    // });
+    var addRoutequery="CALL addRoute(?,?);"
+    mysqlConnection.query(addRoutequery,[dept_port,arr_port],(err,airroute,fields)=>{
+        if(!err)
+        {
+            res.redirect("admin");
         }
-        else
-        console.log(err);
-    });
+        else{
+            console.log(err);
+        }
+    })
     
 })
 
