@@ -227,12 +227,13 @@ app.get("/logout", function(req, res){
     user_name=undefined;
     res.redirect("/login");
 })
-var allairports,allroutes,allfleet;
+var allairports,allroutes,allfleet,everyflight;
 app.get("/admin", function(req, res){
     var allflightsquery = "SELECT * FROM flight INNER JOIN route ON flight.route_id=route.route_id";
     var  displayairports="SELECT * from airport; ";
     var displayroutes="SELECT * FROM route;";
     var displayfleet="SELECT * FROM fleet;";
+    var displayflights="SELECT * FROM flight;"
     
     mysqlConnection.query(allflightsquery, (err, allflights, fields) => {
         if (!err){
@@ -246,9 +247,16 @@ app.get("/admin", function(req, res){
                             mysqlConnection.query(displayfleet, (err, aircrafts, fields) => {
                                 if (!err){
                                     allfleet=aircrafts;
-                                    setTimeout((() => {
-                                        res.render("admin");
-                                    }), 2000)
+                                    mysqlConnection.query(displayflights, (err, airflights, fields) => {
+                                        if (!err){
+                                            everyflight=airflights;
+                                            setTimeout((() => {
+                                                res.render("admin");
+                                            }), 2000)
+                                        }
+                                        else
+                                        console.log(err);
+                                    });
                                 }
                                 else
                                 console.log(err);
@@ -386,6 +394,33 @@ app.post("/adminallflights", function(req, res){
         console.log(err);
     });
 })
+
+app.get("/addflights", function(req, res){
+    setTimeout((() => {
+        res.render("addflights", {everyflight:everyflight});
+        
+    }), 1500);
+})
+
+app.post("/addflights",function(req,res){
+
+    var aircraftId=req.body.aircraftId;
+    var routeId=req.body.routeId;
+    var dept_time=req.body.dept_time;
+    var arr_time=req.body.arr_time;
+    var fare=req.body.fare;
+    var date_dept=req.body.dept_date.toString().substring(0,15);
+    
+    var addflightquery="CALL addFlight(?,?,?,?,?,?);"
+            mysqlConnection.query(addflightquery,[aircraftId,routeId,dept_time,arr_time,fare,date_dept], (err, flightsres, fields) => {
+            if (!err){
+                
+                res.redirect("/admin");
+            }
+            else
+            console.log(err);
+        });
+    });
 
 app.get("/plist", function(req, res){
     res.render("plist", {plistres:plistres});

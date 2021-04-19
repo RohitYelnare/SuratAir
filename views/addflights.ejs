@@ -1,0 +1,102 @@
+<%- include('partials/header') %>
+<link rel="stylesheet" href="css/ticket.css">
+
+    <title>Book Flight</title>
+</head>
+<body>
+
+    <div class="main">
+
+        <!-- Sign up form -->
+        
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8">
+  
+  
+  
+      <link rel="stylesheet" href="css/style.css">
+
+      <script>
+          function updateSelect(changedSelect, selectId) {
+                var otherSelect = document.getElementById(selectId);
+                for (var i = 0; i < otherSelect.options.length; ++i) {
+                        otherSelect.options[i].disabled = false;
+                }
+                if (changedSelect.selectedIndex == 0) {
+                        return;
+                    }
+                 otherSelect.options[changedSelect.selectedIndex].disabled = true;
+            }
+      </script>
+  
+</head>
+
+<body>
+    <!-- <form method="POST">
+        <input type="number" name="flightid">
+        <input type="submit" value="show passengers">
+    </form> -->
+    <% if(message.error) { %>
+		<div class="alert alert-danger" style="text-align: center;">
+			<%= message.error%>
+		</div>
+	<% } %>
+	<% if(message.success) { %>
+		<div class="alert alert-success" style="text-align: center;">
+			<%= message.success %>
+		</div>
+	<% } %>
+
+    <table class="table">
+        <thead>
+          <tr>
+            <!-- <th scope="col">AIRPORT ID</th> -->
+            <th scope="col">FLIGHT Id</i></th>
+            <th scope="col">Aircraft Id</th>
+            <th scope="col">Route Id</th>
+            <th scope="col">Departure Time</th>
+            <th scope="col">Arrival TIme</th>
+            <th scope="col">Fare</th>
+            <th scope="col">Departure Date</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+        <%for(var i=0; i<everyflight.length; i++){%>
+            <tr>
+                <td><%=everyflight[i].flight_id%></td>
+                <td><%=everyflight[i].aircraft_id%></td>
+                <td><%=everyflight[i].route_id%></td>
+                <td><%=everyflight[i].dept_time%></td>
+                <td><%=everyflight[i].arr_time%></td>
+                <td><%=everyflight[i].fare%></td>
+                <td><%=everyflight[i].dept_date%></td>
+
+
+            </tr>
+                
+        <%}%>
+        </tbody>
+      </table>
+        <form method="POST">
+
+            <input type="text" name="aircraftId" id="aircraftId" placeholder="aircraftId" required/>
+            <input type="text" name="routeId" id="routeId" placeholder="routeId" required/>
+            <input type="text" name="dept_time" id="dept_time" placeholder="dept_time" required/>
+            <input type="text" name="arr_time" id="arr_time" placeholder="arr_time" required/>
+            <input type="text" name="fare" id="fare" placeholder="fare" required/>
+            <input type="date" name="dept_date" id="dept_date" placeholder="dept_date" required/>
+
+            <button type="submit" id="portsubmit" name="portsubmit">ADD FLIGHT</button>
+        </form>
+</body>
+</html>
+
+
+    <!-- JS -->
+    <!-- <script src="vendor/jquery/jquery.min.js"></script> -->
+    <!-- <script src="js/main.js"></script> -->
+
+<%- include('partials/footer') %>
