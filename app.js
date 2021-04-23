@@ -197,6 +197,8 @@ app.post("/login", function(req, res){
                     if(isUseradmin==chkres[0].admin){
                         user_id=chkres[0].user_id;
                         user_name=chkres[0].name;
+                        console.log(user_id);
+                        console.log(user_name);
                         req.flash("success","Login Successful!");
                         return res.redirect("/");
                     }else{
@@ -250,9 +252,12 @@ app.get("/admin", function(req, res){
                                     mysqlConnection.query(displayflights, (err, airflights, fields) => {
                                         if (!err){
                                             everyflight=airflights;
+                                            if(user_id===undefined){
+                                                res.redirect("login");
+                                            }else{
                                             setTimeout((() => {
                                                 res.render("admin");
-                                            }), 2000)
+                                            }), 2000);}
                                         }
                                         else
                                         console.log(err);
@@ -304,7 +309,7 @@ app.post("/addairport",function(req,res){
     mysqlConnection.query(addairportquery,[portId,portCity,portName,portCountry], (err, airports, fields) => {
         if (!err){
             //allairports=addairportquery;
-            res.render("admin");
+            res.redirect("admin");
             console.log(airports);
         }
         else

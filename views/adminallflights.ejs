@@ -46,14 +46,14 @@
                 <th scope="row"><%=adminallflights[i].flight_id%></th>
                 <td><%=adminallflights[i].dept_code%></td>
                 <td><%=adminallflights[i].arr_code%></td>
-                <td><%=adminallflights[i].dept_date.toString().substring(0,15)%></td>
-                <td><%=adminallflights[i].dept_time.toString().substring(0,5)%></td>
-                <td><%=adminallflights[i].arr_time.toString().substring(0,5)%></td>
+                <td><%=adminallflights[i].dept_date%></td>
+                <td><%=adminallflights[i].dept_time.substring(0,5)%></td>
+                <td><%=adminallflights[i].arr_time.substring(0,5)%></td>
                 <td><%=adminallflights[i].fare%></td>
                 <td><%=adminallflights[i].seats_left%></td>
                 <form method="POST">
                 <input name="flightid" style="display: none;" value="<%=adminallflights[i].flight_id%>">
-                <td><input type="submit" value="show passengers"></td>
+                <td><input type="submit" value="show passengers" class="btn btn-primary"></td>
                 </tr>
             </form>
         <%}%>
