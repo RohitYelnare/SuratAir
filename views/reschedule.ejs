@@ -39,17 +39,17 @@
         <tbody>
         <%for(var i=0; i<adminallflights.length; i++){%>
             <tr>
+                <form method="POST">
                 <th scope="row"><%=adminallflights[i].flight_id%></th>
                 <td><%=adminallflights[i].dept_code%></td>
                 <td><%=adminallflights[i].arr_code%></td>
                 <td><%=adminallflights[i].dept_date%></td>
-                <td><%=adminallflights[i].dept_time.substring(0,5)%></td>
-                <td><%=adminallflights[i].arr_time.substring(0,5)%></td>
-                <td><%=adminallflights[i].fare%></td>
+                <td><input type="time" name="newdept" value="<%=adminallflights[i].dept_time%>" required></td>
+                <td><input type="time" name="newarr" value="<%=adminallflights[i].arr_time%>" required></td>
+                <td><input type="number" name="newfare" value="<%=adminallflights[i].fare%>" min="0" required></td>
                 <td><%=adminallflights[i].seats_left%></td>
-                <form method="POST">
                 <input name="flightid" style="display: none;" value="<%=adminallflights[i].flight_id%>">
-                <td><input type="submit" value="show passengers" class="btn btn-primary"></td>
+                <td><input type="submit" value="Reschedule" class="btn btn-primary"></td>
                 </tr>
             </form>
         <%}%>
@@ -57,10 +57,5 @@
       </table>
 </body>
 </html>
-
-
-    <!-- JS -->
-    <!-- <script src="vendor/jquery/jquery.min.js"></script> -->
-    <!-- <script src="js/main.js"></script> -->
 
 <%- include('partials/footer') %>

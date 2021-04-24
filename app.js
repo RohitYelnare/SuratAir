@@ -417,15 +417,35 @@ app.post("/addflights",function(req,res){
     var date_dept=req.body.dept_date.toString().substring(0,15);
     
     var addflightquery="CALL addFlight(?,?,?,?,?,?);"
-            mysqlConnection.query(addflightquery,[aircraftId,routeId,dept_time,arr_time,fare,date_dept], (err, flightsres, fields) => {
-            if (!err){
-                
-                res.redirect("/admin");
-            }
-            else
-            console.log(err);
-        });
+    mysqlConnection.query(addflightquery,[aircraftId,routeId,dept_time,arr_time,fare,date_dept], (err, flightsres, fields) => {
+        if (!err){
+            
+            res.redirect("/admin");
+        }
+        else
+        console.log(err);
     });
+});
+
+app.get("/reschedule", function(req, res){
+    setTimeout((() => {
+        res.render("reschedule", {adminallflights:adminallflights});
+    }), 1500);
+})
+
+app.post("/reschedule",function(req,res){
+    var newdept=req.body.newdept.substring(0, 5)+":00";
+    var newarr=req.body.newarr.substring(0, 5)+":00";
+    var rescheduleid=req.body.flightid;
+    var reschedulequery = "UPDATE flight SET dept_time='"+newdept+"', arr_time='"+newarr+"' WHERE flight_id="+rescheduleid+";";
+    mysqlConnection.query(reschedulequery, (err, rescheduleres, fields) => {
+        if (!err){
+            res.redirect("/admin");
+        }
+        else
+        console.log(err);
+    });
+});
 
 app.get("/plist", function(req, res){
     res.render("plist", {plistres:plistres});
