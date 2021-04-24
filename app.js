@@ -411,8 +411,8 @@ app.post("/addflights",function(req,res){
 
     var aircraftId=req.body.aircraftId;
     var routeId=req.body.routeId;
-    var dept_time=req.body.dept_time;
-    var arr_time=req.body.arr_time;
+    var dept_time=req.body.dept_time.substring(0, 5)+":00";
+    var arr_time=req.body.arr_time.substring(0, 5)+":00";
     var fare=req.body.fare;
     var date_dept=req.body.dept_date.toString().substring(0,15);
     
@@ -434,11 +434,37 @@ app.get("/reschedule", function(req, res){
 })
 
 app.post("/reschedule",function(req,res){
-    var newdept=req.body.newdept.substring(0, 5)+":00";
-    var newarr=req.body.newarr.substring(0, 5)+":00";
-    var rescheduleid=req.body.flightid;
-    var reschedulequery = "UPDATE flight SET dept_time='"+newdept+"', arr_time='"+newarr+"' WHERE flight_id="+rescheduleid+";";
-    mysqlConnection.query(reschedulequery, (err, rescheduleres, fields) => {
+    if(req.body.submitbtn=='Update'){
+        var newdept=req.body.newdept.substring(0, 5)+":00";
+        var newarr=req.body.newarr.substring(0, 5)+":00";
+        var newfare=req.body.newfare;
+        var rescheduleid=req.body.flightid;
+        var reschedulequery = "UPDATE flight SET dept_time='"+newdept+"', arr_time='"+newarr+"', fare="+newfare+" WHERE flight_id="+rescheduleid+";";
+        mysqlConnection.query(reschedulequery, (err, rescheduleres, fields) => {
+            if (!err){
+                res.redirect("/admin");
+            }
+            else
+            console.log(err);
+        });
+    }else if(req.body.submitbtn=='Delete'){
+        var delflightid = req.body.flightid;
+        var delflightquery = "DELETE FROM flight WHERE flight_id="+delflightid+";";
+        mysqlConnection.query(delflightquery, (err, rescheduleres, fields) => {
+            if (!err){
+                res.redirect("/admin");
+            }
+            else
+            console.log(err);
+        });
+    }
+});
+
+app.post("/delflight",function(req,res){
+    console.log("delticket called");
+    var delflightid = req.body.flightid;
+    var delflightquery = "DELETE FROM flight WHERE flight_id="+delflightid+";";
+    mysqlConnection.query(delflightquery, (err, rescheduleres, fields) => {
         if (!err){
             res.redirect("/admin");
         }
@@ -446,7 +472,6 @@ app.post("/reschedule",function(req,res){
         console.log(err);
     });
 });
-
 app.get("/plist", function(req, res){
     res.render("plist", {plistres:plistres});
 })

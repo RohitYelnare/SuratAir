@@ -34,6 +34,7 @@
             <th scope="col"><i class="fas fa-rupee-sign"></th>
             <th scope="col">Seats left</th>
             <th scope="col"></th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -49,7 +50,8 @@
                 <td><input type="number" name="newfare" value="<%=adminallflights[i].fare%>" min="0" required></td>
                 <td><%=adminallflights[i].seats_left%></td>
                 <input name="flightid" style="display: none;" value="<%=adminallflights[i].flight_id%>">
-                <td><input type="submit" value="Reschedule" class="btn btn-primary"></td>
+                <td><input type="submit" name="submitbtn" value="Update" class="btn btn-primary"></td>
+                <td><input type="submit" name="submitbtn" value="Delete" class="btn" style="background-color: red; color: white;"></td>
                 </tr>
             </form>
         <%}%>
