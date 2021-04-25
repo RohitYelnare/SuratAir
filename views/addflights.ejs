@@ -78,8 +78,28 @@
       </table>
         <form method="POST">
 
-            <p>Aircraft ID: <input type="text" name="aircraftId" id="aircraftId" placeholder="aircraftId" required/></p>
-            <p>Route ID: <input type="number" name="routeId" id="routeId" placeholder="routeId" required/></p>
+            <p>Aircraft ID: 
+            <select type="text" id="aircraft" placeholder="Departure" name="airport_dept" maxlength="3" style="text-transform: uppercase" onchange="updateSelect(this,'airport2')" > 
+                <option value="">Select a Aircraft Id...</option>
+                                                <% for (var i = 0; i < allfleet.length; i++) { %>
+                                                    
+                                                    <option>
+                                                       <%= allfleet[i].aircraft_id %>
+                                                    </option>
+                                                    <% } %>
+            </select>
+            </p>
+            <p>Route ID: 
+            <select type="text" id="aircraft" placeholder="Departure" name="airport_dept" maxlength="3" style="text-transform: uppercase" onchange="updateSelect(this,'airport2')" > 
+                <option value="">Select a Route Id...</option>
+                                                <% for (var i = 0; i < allroutes.length; i++) { %>
+                                                    
+                                                    <option>
+                                                       <%= allroutes[i].route_id %>
+                                                    </option>
+                                                    <% } %>
+            </select>
+            </p>
             <p>Arrival time:<input type="time" name="dept_time" id="dept_time" placeholder="dept_time" required/></p>
             <p>Departure Time: <input type="time" name="arr_time" id="arr_time" placeholder="arr_time" required/></p>
             <p>Fare: <input type="text" name="fare" id="fare" placeholder="fare" required/></p>

@@ -378,7 +378,7 @@ app.post("/adminallflights", function(req, res){
 
 app.get("/addflights", function(req, res){
     setTimeout((() => {
-        res.render("addflights", {everyflight:everyflight});
+        res.render("addflights", {everyflight:everyflight,allroutes:allroutes,allfleet:allfleet});
         
     }), 1500);
 })
