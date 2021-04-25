@@ -56,7 +56,6 @@ app.get("/test", function(req, res){
 
 app.get("/", function(req, res){
     const query = "SELECT city, country FROM airport;";
-    console.log(user_id);
     mysqlConnection.query(query, (err, destinations, fields) => {
         if (!err){
             destinationsfound=destinations;
@@ -74,10 +73,7 @@ app.get("/", function(req, res){
 });
 
 app.get("/booking", function(req, res){
-    // user_id=1;
     bookingsoutput=[], ticketsoutput=[];
-    console.log("user_id");
-    console.log(user_id);
     var bookingquery = "select * from booking where user_id =" + user_id + ";";
     
     mysqlConnection.query(bookingquery, (err, bookingres, fields) => {
@@ -102,14 +98,12 @@ app.get("/booking", function(req, res){
 
 app.get("/tickets", function(req, res){
     setTimeout((() => {
-        res.render("tickets", {bookingsoutput: bookingsoutput, ticketsoutput: ticketsoutput});
-    }), 2000)
+        res.render("tickets", {bookingsoutput: bookingsoutput, ticketsoutput: ticketsoutput, user_id:user_id, user_name: user_name});
+    }), 1500)
 });
 
 app.post("/tickets", function(req, res){
     var del_ticket_id=req.body.ticketid;
-    console.log("del_ticket_id");
-    console.log(del_ticket_id);
     var delprocedure = "CALL delticket("+del_ticket_id+")";
     mysqlConnection.query(delprocedure, (err, delticketres, fields) => {
         if (!err){
@@ -132,8 +126,6 @@ app.post("/signup", function(req, res){
     isUseradmin = (req.body.isAdmin=='on')?1:0;
     var password = req.body.password;
     const saltRounds=bcrypt.genSalt(20);
-    console.log("admin");
-    console.log(admin);
     //hashing the password;
     bcrypt.genSalt(10, function(err, salt) {
         if (err) return callback(err);
@@ -148,7 +140,6 @@ app.post("/signup", function(req, res){
                     if(chkres.length==0){
                         mysqlConnection.query(insquery, (err, insres, fields) => {
                             if (!err){
-                                console.log(insres.insertId);
                                 user_id=insres.insertId;
                                // res.send("successfully registered");
                                 req.flash("success","Registrstion Successful!! To continue please login first.");
@@ -197,8 +188,6 @@ app.post("/login", function(req, res){
                     if(isUseradmin==chkres[0].admin){
                         user_id=chkres[0].user_id;
                         user_name=chkres[0].name;
-                        console.log(user_id);
-                        console.log(user_name);
                         req.flash("success","Login Successful!");
                         return res.redirect("/");
                     }else{
@@ -310,7 +299,6 @@ app.post("/addairport",function(req,res){
         if (!err){
             //allairports=addairportquery;
             res.redirect("admin");
-            console.log(airports);
         }
         else
         console.log(err);
@@ -362,7 +350,6 @@ app.get("/addaircraft",function(req,res){
 });
 
 app.post("/addaircraft",function(req,res){
-console.log(req.body);
     var isowned=(req.body.isowned=='on')?1:0;
     var insaircraft = "INSERT INTO fleet(type, reg, age, capacity, acquire_date, isowned) values('"+req.body.type+"','"+req.body.reg+"',"+req.body.age+","+req.body.capacity+",'"+req.body.acquiredate+"',"+isowned+");";
     mysqlConnection.query(insaircraft, (err, insaircraftres, fields) => {
@@ -434,7 +421,7 @@ app.get("/reschedule", function(req, res){
 })
 
 app.post("/reschedule",function(req,res){
-    if(req.body.submitbtn=='Update'){
+    if(req.body.submitbtn=='Reschedule'){
         var newdept=req.body.newdept.substring(0, 5)+":00";
         var newarr=req.body.newarr.substring(0, 5)+":00";
         var newfare=req.body.newfare;
@@ -447,7 +434,7 @@ app.post("/reschedule",function(req,res){
             else
             console.log(err);
         });
-    }else if(req.body.submitbtn=='Delete'){
+    }else if(req.body.submitbtn=='Cancel'){
         var delflightid = req.body.flightid;
         var delflightquery = "DELETE FROM flight WHERE flight_id="+delflightid+";";
         mysqlConnection.query(delflightquery, (err, rescheduleres, fields) => {
@@ -460,18 +447,6 @@ app.post("/reschedule",function(req,res){
     }
 });
 
-app.post("/delflight",function(req,res){
-    console.log("delticket called");
-    var delflightid = req.body.flightid;
-    var delflightquery = "DELETE FROM flight WHERE flight_id="+delflightid+";";
-    mysqlConnection.query(delflightquery, (err, rescheduleres, fields) => {
-        if (!err){
-            res.redirect("/admin");
-        }
-        else
-        console.log(err);
-    });
-});
 app.get("/plist", function(req, res){
     res.render("plist", {plistres:plistres});
 })
@@ -565,7 +540,6 @@ app.post("/seat", function(req, res){
         if(req.body[i]=='on')
         seat_tmp.push(i);
     }
-    console.log()
     res.redirect("pdetails");
 });
 
@@ -574,7 +548,6 @@ app.get("/pdetails", function(req, res){
 });
 
 app.post("/pdetails", function(req, res){
-    console.log(req.body);
     pname = req.body.name;
     pgender = req.body.gender;
     page = req.body.age;

@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <link rel="stylesheet" href="css/ticket.css">
 
-    <title>Book Flight</title>
+    <title>Add Flight</title>
 </head>
 <body>
 
@@ -79,13 +79,13 @@
         <form method="POST">
 
             <input type="text" name="aircraftId" id="aircraftId" placeholder="aircraftId" required/>
-            <input type="text" name="routeId" id="routeId" placeholder="routeId" required/>
+            <input type="number" name="routeId" id="routeId" placeholder="routeId" required/>
             <input type="time" name="dept_time" id="dept_time" placeholder="dept_time" required/>
             <input type="time" name="arr_time" id="arr_time" placeholder="arr_time" required/>
             <input type="text" name="fare" id="fare" placeholder="fare" required/>
             <input type="date" name="dept_date" id="dept_date" placeholder="dept_date" required/>
 
-            <button type="submit" id="portsubmit" name="portsubmit">ADD FLIGHT</button>
+            <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary">ADD FLIGHT</button>
         </form>
 </body>
 </html>
