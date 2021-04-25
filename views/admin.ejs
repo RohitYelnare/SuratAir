@@ -13,25 +13,36 @@
 <html >
 <head>
   <meta charset="UTF-8">
-  
+
       <link rel="stylesheet" href="css/style.css">
-  
+    <style>
+        
+    </style>
 </head>
 
 <body>
+<%- include('partials/navbaradmin') %>
+    <br>
+    <br>
+    <br>
     <div class="d-flex justify-content-center">
         <form method="POST">
-            <a href="/adminallflights">showallflights</a>
+            <a href="/adminallflights" class="btn btn-primary">Show all passengers</a>
             <br>
-            <a href="/addairport">addairport</a>
             <br>
-            <a href="/addroute">addroute</a>
+            <a href="/addairport" class="btn btn-primary" >Add an Airport</a>
             <br>
-            <a href="/addaircraft">addaircraft</a>
             <br>
-            <a href="/addflights">addflight</a>
+            <a href="/addroute" class="btn btn-primary" >Add a Route</a>
             <br>
-            <a href="/reschedule">reschedule flight</a>
+            <br>
+            <a href="/addaircraft" class="btn btn-primary" >Add an aircraft</a>
+            <br>
+            <br>
+            <a href="/addflights" class="btn btn-primary" >Add a Flight</a>
+            <br>
+            <br>
+            <a href="/reschedule" class="btn btn-primary" >Reschedule/Cancel Flight</a>
         </form>
     </div>
 </body>

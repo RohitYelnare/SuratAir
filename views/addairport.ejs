@@ -53,13 +53,25 @@
         <%}%>
         </tbody>
       </table>
+      <div class="d-flex justify-content-center">
+
         <form method="POST">
-            <input type="text" id="airport1" placeholder="code_id" name="airportId" maxlength="3" style="text-transform: uppercase"> 
-            <input type="text" id="airport1" placeholder="Name" name="airportName" maxlength="70" > 
-            <input type="text" id="airport1" placeholder="City" name="airportCity" maxlength="20" > 
-            <input type="text" id="airport1" placeholder="Country" name="airportCountry" maxlength="50" > 
-            <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary">ADD AIRPORT</button>
+          <input type="text" id="airport1" placeholder="code" name="airportId" maxlength="3" style="text-transform: uppercase"> 
+          <br>
+          <br>
+          <input type="text" id="airport1" placeholder="Airport Name" name="airportName" maxlength="70" > 
+          <br>
+          <br>
+          <input type="text" id="airport1" placeholder="City" name="airportCity" maxlength="20" > 
+          <br>
+          <br>
+          <input type="text" id="airport1" placeholder="Country" name="airportCountry" maxlength="50" > 
+          <br>
+          <br>
+          <br>
+          <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary">ADD AIRPORT</button>
         </form>
+      </div>
 </body>
 </html>
 <%- include('partials/footer') %>

@@ -13,12 +13,17 @@
 <html >
 <head>
   <meta charset="UTF-8">
-  
-  
-  
       <link rel="stylesheet" href="css/style.css">
 
       <script>
+          function timevalid(){
+          if(document.getElementById("dept_time").value>=document.getElementById("arr_time").value){
+            alert("Invalid departure and arrival times");
+            return false;
+          }else{
+            return true;
+          }
+        }
           function updateSelect(changedSelect, selectId) {
                 var otherSelect = document.getElementById(selectId);
                 for (var i = 0; i < otherSelect.options.length; ++i) {
@@ -48,7 +53,6 @@
     <table class="table">
         <thead>
           <tr>
-            <!-- <th scope="col">AIRPORT ID</th> -->
             <th scope="col">FLIGHT Id</i></th>
             <th scope="col">Aircraft Id</th>
             <th scope="col">Route Id</th>
@@ -56,7 +60,6 @@
             <th scope="col">Arrival TIme</th>
             <th scope="col">Fare</th>
             <th scope="col">Departure Date</th>
-            
           </tr>
         </thead>
         <tbody>
@@ -69,45 +72,49 @@
                 <td><%=everyflight[i].arr_time%></td>
                 <td><%=everyflight[i].fare%></td>
                 <td><%=everyflight[i].dept_date%></td>
-
-
             </tr>
-                
         <%}%>
         </tbody>
       </table>
+      <br>
+      <br>
+      <br>
+      <div class="d-flex justify-content-center">
+
         <form method="POST">
-
-            <p>Aircraft ID: 
-            <select type="text" id="aircraft" placeholder="Departure" name="airport_dept" maxlength="3" style="text-transform: uppercase" onchange="updateSelect(this,'airport2')" > 
-                <option value="">Select a Aircraft Id...</option>
-                                                <% for (var i = 0; i < allfleet.length; i++) { %>
-                                                    
-                                                    <option>
-                                                       <%= allfleet[i].aircraft_id %>
-                                                    </option>
-                                                    <% } %>
-            </select>
-            </p>
-            <p>Route ID: 
-            <select type="text" id="aircraft" placeholder="Departure" name="airport_dept" maxlength="3" style="text-transform: uppercase" onchange="updateSelect(this,'airport2')" > 
-                <option value="">Select a Route Id...</option>
-                                                <% for (var i = 0; i < allroutes.length; i++) { %>
-                                                    
-                                                    <option>
-                                                       <%= allroutes[i].route_id %>
-                                                    </option>
-                                                    <% } %>
-            </select>
-            </p>
-            <p>Arrival time:<input type="time" name="dept_time" id="dept_time" placeholder="dept_time" required/></p>
-            <p>Departure Time: <input type="time" name="arr_time" id="arr_time" placeholder="arr_time" required/></p>
-            <p>Fare: <input type="text" name="fare" id="fare" placeholder="fare" required/></p>
-            <p>Date: <input type="date" name="dept_date" id="dept_date" placeholder="dept_date" required/></p>
           
-            <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary">ADD FLIGHT</button>
-        </form>
-</body>
-</html>
-
-<%- include('partials/footer') %>
+          <p>Aircraft ID: 
+            <select type="text" id="aircraft" placeholder="Departure" name="aircraftId" maxlength="3" style="text-transform: uppercase" onchange="updateSelect(this,'airport2')" > 
+              <option value="">Select a Aircraft Id...</option>
+              <% for (var i = 0; i < allfleet.length; i++) { %>
+                
+                <option>
+                  <%= allfleet[i].aircraft_id %>
+                </option>
+                <% } %>
+              </select>
+            </p>
+            <p>Route: 
+              <select type="text" id="aircraft" placeholder="Rote" name="routeId" maxlength="3" style="text-transform: uppercase" onchange="updateSelect(this,'airport2')" > 
+                <option value="">Select a Route Id...</option>
+                <% for (var i = 0; i < allroutes.length; i++) { %>
+                  
+                  <option>
+                    <%= allroutes[i].route_id %> &nbsp;<%= allroutes[i].dept_code %>-<%= allroutes[i].arr_code %>
+                  </option>
+                  <% } %>
+                </select>
+              </p>
+              <p>Departure time:<input type="time" name="dept_time" id="dept_time" placeholder="dept_time" required/></p>
+              <p>Arrival Time: <input type="time" name="arr_time" id="arr_time" placeholder="arr_time" required/></p>
+              <p>Fare: <input type="text" name="fare" id="fare" placeholder="fare" required/></p>
+              <p>Date: <input type="date" name="dept_date" id="dept_date" placeholder="dept_date" required/></p>
+              <br>
+              <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary" onclick="return timevalid()">ADD FLIGHT</button>
+            </form>
+          </div>
+          </body>
+          </html>
+          
+          <%- include('partials/footer') %>
+          

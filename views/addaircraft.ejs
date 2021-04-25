@@ -45,27 +45,34 @@
       <br>
       <br>
       <br>
+      <div class="d-flex justify-content-center">
         <form method="POST">
-            <input type="text" name="type" value="B737 MAX-8" readonly> 
-            <br>
-            <br>
-            <input type="text" placeholder="Registration" name="reg" maxlength="10" required style="text-transform: uppercase"> 
-            <br>
-            <br>
-            <input type="number" placeholder="Age(in yrs)" name="age" min="0" required> 
-            <br>
-            <br>
-            <input type="number" name="capacity" value="180" readonly> 
-            <br>
-            <br>
-            <input type="date" name="acquiredate" required> 
-            <br>
-            <br>
-            Owned? <input type="checkbox" name="isowned"> 
-            <br>
-            <br>
-            <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary">ADD AIRCRAFT</button>
+          <p>Aircraft Type:</p>
+          <input type="text" name="type" value="B737 MAX-8" readonly> 
+          <br>
+          <br>
+          <p>Aircraft Registration:</p>
+          <input type="text" placeholder="Registration" name="reg" maxlength="10" required style="text-transform: uppercase"> 
+          <br>
+          <br>
+          <p>Age:</p>
+          <input type="number" placeholder="Age(in yrs)" name="age" min="0" required> 
+          <br>
+          <br>
+          <p>Capacity:</p>
+          <input type="number" name="capacity" value="180" readonly> 
+          <br>
+          <br>
+          <p>Date of acquisition:</p>
+          <input type="date" name="acquiredate" required> 
+          <br>
+          <br>
+          Owned? <input type="checkbox" name="isowned"> 
+          <br>
+          <br>
+          <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary">ADD AIRCRAFT</button>
         </form>
+      </div>
 </body>
 </html>
 <%- include('partials/footer') %>

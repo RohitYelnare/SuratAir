@@ -10,7 +10,7 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 var adminallflights,flightsfound,destinationsfound,flight_id_tmp, user_id, plistres, user_name, isUseradmin, seat_tmp=[], pcount=[],pname=[], 
-pgender=[],occupied=[], page=[], flight_dur=[], bookingsoutput=[], ticketsoutput=[];
+pgender=[],occupied=[], page=[], flight_dur=[], bookingsoutput=[], ticketsoutput=[], samplestr="samplestr";
 
 app.use(require("express-session")({
     secret:"00000000",
@@ -33,7 +33,7 @@ var mysqlConnection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'suratair',
+    database: 'suratairdb',
     multipleStatements: true
 });
     
@@ -59,7 +59,6 @@ app.get("/", function(req, res){
     mysqlConnection.query(query, (err, destinations, fields) => {
         if (!err){
             destinationsfound=destinations;
-            // res.send(destinationsfound);
         }else
             console.log(err);
     });
@@ -245,7 +244,7 @@ app.get("/admin", function(req, res){
                                                 res.redirect("login");
                                             }else{
                                             setTimeout((() => {
-                                                res.render("admin");
+                                                res.render("admin" , {user_id:user_id, user_name: user_name});
                                             }), 2000);}
                                         }
                                         else
@@ -305,20 +304,6 @@ app.post("/addroute",function(req,res){
     var dept_port=req.body.airport_dept;
     var arr_port=req.body.airport_arr;
     var flag=[];
-    // var routeQuery="INSERT INTO route(dept_code,arr_code)VALUES(?,?);"
-    // var chkRoute="SELECT CASE WHEN EXISTS (SELECT route.dept_code,route.arr_code  FROM route WHERE route.dept_code =? and route.arr_code=?) THEN CAST(1 AS DECIMAL)ELSE CAST(0 AS DECIMAL) END"
-    
-    //var addRoutequery="INSERT INTO route (route.dept_code,route.arr_code)SELECT * FROM (SELECT ?,?) AS tmp WHERE NOT EXISTS (SELECT route.dept_code,route.arr_code FROM route WHERE route.dept_code = ? and route.arr_code=?) LIMIT 1;"
-    
-    //var addRoutequery="INSERT  INTO route (route.dept_code,route.arr_code) SELECT ?,? FROM route WHERE NOT EXISTS (SELECT route.dept_code,route.arr_code FROM route WHERE dept_code = ? and arr_code=?) LIMIT 1;"
-    // mysqlConnection.query(addRoutequery,[dept_port,arr_port,dept_port,arr_port], (err, airoute, fields) => {
-    //     if (!err){
-    //         res.redirect("/admin");
-    //         console.log(addRoutequery);
-    //     }
-    //     else
-    //     console.log(err);
-    // });
     var addRoutequery="CALL addRoute(?,?);"
     mysqlConnection.query(addRoutequery,[dept_port,arr_port],(err,airroute,fields)=>{
         if(!err)
@@ -453,9 +438,9 @@ app.post("/search", function(req, res){
     const arr = req.body.arr;
     const date = req.body.date;
     pcount = req.body.pcount;
-    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r INNER JOIN flight f ON f.route_id=r.route_id INNER JOIN airport a1 ON r.dept_code=a1.code_id INNER JOIN airport a2 ON r.arr_code=a2.code_id WHERE f.dept_date=? AND a1.city=? AND a2.city=?;";
+    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r INNER JOIN flight f ON f.route_id=r.route_id INNER JOIN airport a1 ON r.dept_code=a1.code_id INNER JOIN airport a2 ON r.arr_code=a2.code_id WHERE f.dept_date=? AND a1.city=? AND a2.city=? AND f.seats_left>=?;";
 
-    mysqlConnection.query(query,[date,dept,arr], (err, flights, fields) => {
+    mysqlConnection.query(query,[date,dept,arr,pcount], (err, flights, fields) => {
         if (!err){
             if(flights.length==0){
                 res.redirect("noflights");
@@ -534,9 +519,9 @@ app.get("/pdetails", function(req, res){
 });
 
 app.post("/pdetails", function(req, res){
-    pname = req.body.name;
-    pgender = req.body.gender;
-    page = req.body.age;
+    pname=req.body.name;
+    pgender=req.body.gender;
+    page=req.body.age;
     var booking_id_tmp;
     var ticket_id_tmp;
     var passenger_id_tmp;
@@ -549,12 +534,13 @@ app.post("/pdetails", function(req, res){
             if (!err){
                 booking_id_tmp = booking_ins_output.insertId;
                 for(var j=0; j<pcount; j++){
-                    var insticket = "INSERT INTO ticket(booking_id, flight_id, seat_no) values(?,?,?);";
-                    mysqlConnection.query(insticket, [booking_id_tmp,flight_id_tmp, seat_tmp.pop()], (err, ticket_ins_output, fields) => {
+                    var insticket = "INSERT INTO ticket(booking_id, flight_id, seat_no) values("+booking_id_tmp+","+flight_id_tmp+","+seat_tmp.pop()+");";
+                    mysqlConnection.query(insticket, (err, ticket_ins_output, fields) => {
                         if(!err){
                             ticket_id_tmp = ticket_ins_output.insertId;
-                            var inspassenger = "INSERT INTO passenger(ticket_id, name, gender, age) values(?,?,?,?);";
-                            mysqlConnection.query(inspassenger, [ticket_id_tmp, pname.pop(), pgender.pop(), page.pop()], (err, ticket_ins_output, fields) => {
+                            var inspassenger = (pcount==1)?"INSERT INTO passenger(ticket_id, name, gender, age) values(" + ticket_id_tmp + ",'" + pname + "','"  + pgender + "'," + page + ");"
+                                                            :"INSERT INTO passenger(ticket_id, name, gender, age) values(" + ticket_id_tmp + ",'" + pname.pop() + "','"  + pgender.pop() + "'," + page.pop() + ");"
+                            mysqlConnection.query(inspassenger, (err, ticket_ins_output, fields) => {
                                 if(!err){
                                     console.log("success");
                                 }else
