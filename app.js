@@ -74,14 +74,14 @@ app.get("/", function(req, res){
 
 app.get("/booking", function(req, res){
     bookingsoutput=[], ticketsoutput=[];
-    var bookingquery = "select * from booking where user_id =" + user_id + ";";
+    var bookingquery = "select * from booking where user_id =?;";
     
-    mysqlConnection.query(bookingquery, (err, bookingres, fields) => {
+    mysqlConnection.query(bookingquery,[user_id], (err, bookingres, fields) => {
         if (!err){
             for(var i=0; i<bookingres.length; i++){
                 bookingsoutput.push(bookingres[i]);
-                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, t.ticket_id, f.route_id, f.flight_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=" + user_id + " and f.flight_id=t.flight_id and b.booking_id=" + bookingres[i].booking_id + " and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
-                mysqlConnection.query(ticketsquery, (err, ticketsres, fields) => {
+                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, t.ticket_id, f.route_id, f.flight_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=? and f.flight_id=t.flight_id and b.booking_id=? and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
+                mysqlConnection.query(ticketsquery,[user_id,bookingres[i].booking_id], (err, ticketsres, fields) => {
                     if (!err){
                         ticketsoutput.push(ticketsres);
                     }else
@@ -104,8 +104,8 @@ app.get("/tickets", function(req, res){
 
 app.post("/tickets", function(req, res){
     var del_ticket_id=req.body.ticketid;
-    var delprocedure = "CALL delticket("+del_ticket_id+")";
-    mysqlConnection.query(delprocedure, (err, delticketres, fields) => {
+    var delprocedure = "CALL delticket(?)";
+    mysqlConnection.query(delprocedure,[del_ticket_id], (err, delticketres, fields) => {
         if (!err){
             res.redirect("booking");
         }else
@@ -132,13 +132,13 @@ app.post("/signup", function(req, res){
     
         bcrypt.hash(password, salt, function(err, hash) {
             password = hash;
-            const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
-            const insquery = "INSERT INTO user (name, email, mobile, password, admin) values('" + name + "', '" + email + "'," + mobile + ",'" + password + "'," + admin + ");";
+            const chkquery = "SELECT * FROM user WHERE email=?";
+            const insquery = "INSERT INTO user (name, email, mobile, password, admin) values(?,?,?,?,?);";
 
-            mysqlConnection.query(chkquery, (err, chkres, fields) => {
+            mysqlConnection.query(chkquery,[email], (err, chkres, fields) => {
                 if (!err){
                     if(chkres.length==0){
-                        mysqlConnection.query(insquery, (err, insres, fields) => {
+                        mysqlConnection.query(insquery,[name, email, mobile, password, admin], (err, insres, fields) => {
                             if (!err){
                                 user_id=insres.insertId;
                                // res.send("successfully registered");
@@ -171,9 +171,9 @@ app.post("/login", function(req, res){
     const password = req.body.password;
     isUseradmin = (req.body.isAdmin=='on')?1:0;
     var flag;
-    const chkquery = "SELECT * FROM user WHERE email='" + email + "'";
+    const chkquery = "SELECT * FROM user WHERE email=?";
     
-    mysqlConnection.query(chkquery, (err, chkres, fields) => {
+    mysqlConnection.query(chkquery,[email], (err, chkres, fields) => {
         if (!err){
             if(chkres.length==1){
                 bcrypt.compare(password,chkres[0].password, function(err, result) {
@@ -285,19 +285,8 @@ app.post("/addairport",function(req,res){
     
     var addairportquery="INSERT INTO airport(code_id, city, name, country) VALUES(?,?,?,?);";
     var checkCodeId="SELECT airport.code_id FROM airport WHERE ?=airport.code_id ;"
-    // mysqlConnection.query(checkCodeId,[portId,portId],(err, CodeId, fields) =>{
-    //     if(!err)
-    //     {
-           
-    //     }
-    //     else{
-    //         req.flash("error"," User Found! Please Add again.");
-    //             return  res.redirect("/addairport");
-    //     }
-    // })
     mysqlConnection.query(addairportquery,[portId,portCity,portName,portCountry], (err, airports, fields) => {
         if (!err){
-            //allairports=addairportquery;
             res.redirect("admin");
         }
         else
@@ -351,8 +340,8 @@ app.get("/addaircraft",function(req,res){
 
 app.post("/addaircraft",function(req,res){
     var isowned=(req.body.isowned=='on')?1:0;
-    var insaircraft = "INSERT INTO fleet(type, reg, age, capacity, acquire_date, isowned) values('"+req.body.type+"','"+req.body.reg+"',"+req.body.age+","+req.body.capacity+",'"+req.body.acquiredate+"',"+isowned+");";
-    mysqlConnection.query(insaircraft, (err, insaircraftres, fields) => {
+    var insaircraft = "INSERT INTO fleet(type, reg, age, capacity, acquire_date, isowned) values(?,?,?,?,?,?);";
+    mysqlConnection.query(insaircraft,[req.body.type, req.body.reg, req.body.age, req.body.capacity, req.body.acquiredate, isowned], (err, insaircraftres, fields) => {
         if (!err){
             res.redirect("/admin");
         }
@@ -369,9 +358,9 @@ app.get("/adminallflights", function(req, res){
 
 app.post("/adminallflights", function(req, res){
     var flightreq = req.body.flightid;
-    var plistview = "CREATE OR REPLACE VIEW passengerlist AS SELECT name, age, gender, seat_no FROM passenger INNER JOIN ticket ON ticket.ticket_id=passenger.ticket_id WHERE flight_id=" + flightreq + " ORDER BY seat_no;";
+    var plistview = "CREATE OR REPLACE VIEW passengerlist AS SELECT name, age, gender, seat_no FROM passenger INNER JOIN ticket ON ticket.ticket_id=passenger.ticket_id WHERE flight_id=? ORDER BY seat_no;";
     var plistquery = "SELECT * FROM passengerlist;";
-    mysqlConnection.query(plistview, (err, viewres, fields) => {
+    mysqlConnection.query(plistview,[flightreq], (err, viewres, fields) => {
         if (!err){
             mysqlConnection.query(plistquery, (err, output, fields) => {
                 if (!err){
@@ -406,7 +395,6 @@ app.post("/addflights",function(req,res){
     var addflightquery="CALL addFlight(?,?,?,?,?,?);"
     mysqlConnection.query(addflightquery,[aircraftId,routeId,dept_time,arr_time,fare,date_dept], (err, flightsres, fields) => {
         if (!err){
-            
             res.redirect("/admin");
         }
         else
@@ -426,8 +414,8 @@ app.post("/reschedule",function(req,res){
         var newarr=req.body.newarr.substring(0, 5)+":00";
         var newfare=req.body.newfare;
         var rescheduleid=req.body.flightid;
-        var reschedulequery = "UPDATE flight SET dept_time='"+newdept+"', arr_time='"+newarr+"', fare="+newfare+" WHERE flight_id="+rescheduleid+";";
-        mysqlConnection.query(reschedulequery, (err, rescheduleres, fields) => {
+        var reschedulequery = "UPDATE flight SET dept_time=?, arr_time=?, fare=? WHERE flight_id=?;";
+        mysqlConnection.query(reschedulequery,[newdept, newarr, newfare, rescheduleid], (err, rescheduleres, fields) => {
             if (!err){
                 res.redirect("/admin");
             }
@@ -436,8 +424,8 @@ app.post("/reschedule",function(req,res){
         });
     }else if(req.body.submitbtn=='Cancel'){
         var delflightid = req.body.flightid;
-        var delflightquery = "DELETE FROM flight WHERE flight_id="+delflightid+";";
-        mysqlConnection.query(delflightquery, (err, rescheduleres, fields) => {
+        var delflightquery = "DELETE FROM flight WHERE flight_id=?;";
+        mysqlConnection.query(delflightquery,[delflightid], (err, rescheduleres, fields) => {
             if (!err){
                 res.redirect("/admin");
             }
@@ -465,12 +453,11 @@ app.post("/search", function(req, res){
     const arr = req.body.arr;
     const date = req.body.date;
     pcount = req.body.pcount;
-    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r INNER JOIN flight f ON f.route_id=r.route_id INNER JOIN airport a1 ON r.dept_code=a1.code_id INNER JOIN airport a2 ON r.arr_code=a2.code_id WHERE f.dept_date='" + date + "' AND a1.city='" + dept + "' AND a2.city='" + arr + "';";
+    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r INNER JOIN flight f ON f.route_id=r.route_id INNER JOIN airport a1 ON r.dept_code=a1.code_id INNER JOIN airport a2 ON r.arr_code=a2.code_id WHERE f.dept_date=? AND a1.city=? AND a2.city=?;";
 
-    mysqlConnection.query(query, (err, flights, fields) => {
+    mysqlConnection.query(query,[date,dept,arr], (err, flights, fields) => {
         if (!err){
             if(flights.length==0){
-                // res.send("no flights found");
                 res.redirect("noflights");
             }else{
                 flightsfound=flights;
@@ -517,11 +504,10 @@ app.get("/flights", function(req, res){
 });
 
 app.post("/flights", function(req, res){
-    // const query = "SELECT ac.capacity FROM fleet ac, flight f WHERE f.aircraft_id=ac.aircraft_id AND f.flight_id=" + req.body.flightno + ";";
     flight_id_tmp = req.body.flightno;
-    const occupied_query = "SELECT seat_no FROM ticket t WHERE flight_id=" + flight_id_tmp + ";";
+    const occupied_query = "SELECT seat_no FROM ticket t WHERE flight_id=?;";
 
-    mysqlConnection.query(occupied_query, (err, occ_seats, fields) => {
+    mysqlConnection.query(occupied_query,[flight_id_tmp], (err, occ_seats, fields) => {
         if (!err){
             occ_seats.forEach((obj)=>occupied.push(obj.seat_no))
         }
@@ -555,20 +541,20 @@ app.post("/pdetails", function(req, res){
     var ticket_id_tmp;
     var passenger_id_tmp;
     var inspassenger = "INSERT INTO passenger values";
-    var insbooking = "INSERT INTO booking (user_id, booking_timestamp) values(" + user_id + ",CURRENT_TIMESTAMP());";
+    var insbooking = "INSERT INTO booking (user_id, booking_timestamp) values(?,CURRENT_TIMESTAMP());";
     if(user_id===undefined){
         res.redirect("login");
     }else{
-        mysqlConnection.query(insbooking, (err, booking_ins_output, fields) => {
+        mysqlConnection.query(insbooking, [user_id], (err, booking_ins_output, fields) => {
             if (!err){
                 booking_id_tmp = booking_ins_output.insertId;
                 for(var j=0; j<pcount; j++){
-                    var insticket = "INSERT INTO ticket(booking_id, flight_id, seat_no) values(" + booking_id_tmp + "," + flight_id_tmp + "," + seat_tmp.pop() + ");";
-                    mysqlConnection.query(insticket, (err, ticket_ins_output, fields) => {
+                    var insticket = "INSERT INTO ticket(booking_id, flight_id, seat_no) values(?,?,?);";
+                    mysqlConnection.query(insticket, [booking_id_tmp,flight_id_tmp, seat_tmp.pop()], (err, ticket_ins_output, fields) => {
                         if(!err){
                             ticket_id_tmp = ticket_ins_output.insertId;
-                            var inspassenger = "INSERT INTO passenger(ticket_id, name, gender, age) values(" + ticket_id_tmp + ",'" + pname.pop() + "','"  + pgender.pop() + "'," + page.pop() + ");";
-                            mysqlConnection.query(inspassenger, (err, ticket_ins_output, fields) => {
+                            var inspassenger = "INSERT INTO passenger(ticket_id, name, gender, age) values(?,?,?,?);";
+                            mysqlConnection.query(inspassenger, [ticket_id_tmp, pname.pop(), pgender.pop(), page.pop()], (err, ticket_ins_output, fields) => {
                                 if(!err){
                                     console.log("success");
                                 }else
