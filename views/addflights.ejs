@@ -76,32 +76,28 @@
         <%}%>
         </tbody>
       </table>
-<<<<<<< HEAD
       <br>
       <br>
       <br>
       <div class="d-flex justify-content-center">
-=======
-      <div class="container-fluid">
         <form method="POST">
->>>>>>> f57bfc8ddc9d06725cfb1a4f6c6b5a2beb0084d2
 
         <form method="POST">
           
           <p>Aircraft ID: 
             <select type="text" id="aircraft" placeholder="Departure" name="aircraftId" maxlength="3" style="text-transform: uppercase" onchange="updateSelect(this,'airport2')" > 
-              <option value="">Select a Aircraft Id...</option>
+              <option value="">Select Aircraft</option>
               <% for (var i = 0; i < allfleet.length; i++) { %>
                 
                 <option>
-                  <%= allfleet[i].aircraft_id %>
+                  <%= allfleet[i].aircraft_id %>-Capacity: <%= allfleet[i].capacity %> 
                 </option>
                 <% } %>
               </select>
             </p>
             <p>Route: 
               <select type="text" id="aircraft" placeholder="Rote" name="routeId" maxlength="3" style="text-transform: uppercase" onchange="updateSelect(this,'airport2')" > 
-                <option value="">Select a Route Id...</option>
+                <option value="">Select Route</option>
                 <% for (var i = 0; i < allroutes.length; i++) { %>
                   
                   <option>
@@ -112,24 +108,13 @@
               </p>
               <p>Departure time:<input type="time" name="dept_time" id="dept_time" placeholder="dept_time" required/></p>
               <p>Arrival Time: <input type="time" name="arr_time" id="arr_time" placeholder="arr_time" required/></p>
-              <p>Fare: <input type="text" name="fare" id="fare" placeholder="fare" required/></p>
+              <p>Fare: <input type="number" name="fare" id="fare" placeholder="Fare" min="0" required/></p>
               <p>Date: <input type="date" name="dept_date" id="dept_date" placeholder="dept_date" required/></p>
               <br>
               <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary" onclick="return timevalid()">ADD FLIGHT</button>
             </form>
-          </div>
-          </body>
-          </html>
-          
-<<<<<<< HEAD
-          <%- include('partials/footer') %>
-          
-=======
-            <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary">ADD FLIGHT</button>
-        </form>
     </div>
 </body>
 </html>
 
 <%- include('partials/footer') %>
->>>>>>> f57bfc8ddc9d06725cfb1a4f6c6b5a2beb0084d2
