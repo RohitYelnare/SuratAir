@@ -33,7 +33,7 @@ var mysqlConnection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'suratair',
+    database: 'suratairdb',
     multipleStatements: true
 });
     
