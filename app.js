@@ -71,36 +71,6 @@ app.get("/", function(req, res){
     }
 });
 
-app.get("/booking", function(req, res){
-    bookingsoutput=[], ticketsoutput=[];
-    var bookingquery = "select * from booking where user_id =?;";
-    
-    mysqlConnection.query(bookingquery,[user_id], (err, bookingres, fields) => {
-        if (!err){
-            for(var i=0; i<bookingres.length; i++){
-                bookingsoutput.push(bookingres[i]);
-                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, t.ticket_id, f.route_id, f.flight_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=? and f.flight_id=t.flight_id and b.booking_id=? and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
-                mysqlConnection.query(ticketsquery,[user_id,bookingres[i].booking_id], (err, ticketsres, fields) => {
-                    if (!err){
-                        ticketsoutput.push(ticketsres);
-                    }else
-                    console.log(err);
-                });
-                if(ticketsoutput!==undefined){
-                }
-            }
-            res.redirect("tickets");
-        }else
-        console.log(err);
-    });
-})
-
-app.get("/tickets", function(req, res){
-    setTimeout((() => {
-        res.render("tickets", {bookingsoutput: bookingsoutput, ticketsoutput: ticketsoutput, user_id:user_id, user_name: user_name});
-    }), 1500)
-});
-
 app.post("/tickets", function(req, res){
     var del_ticket_id=req.body.ticketid;
     var delprocedure = "CALL delticket(?)";
@@ -268,7 +238,59 @@ app.get("/admin", function(req, res){
     });
 })
 
+app.get("/search", function(req, res){
+    if(user_id===undefined){
+        res.redirect("login");
+    }else{
+    setTimeout((() => {
+        res.render("search", {destinationsfound:destinationsfound, user_id:user_id, user_name: user_name});
+    }), 2000);}
+})
 
+app.post("/search", function(req, res){
+    const dept = req.body.dept;
+    const arr = req.body.arr;
+    const date = req.body.date;
+    pcount = req.body.pcount;
+    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r INNER JOIN flight f ON f.route_id=r.route_id INNER JOIN airport a1 ON r.dept_code=a1.code_id INNER JOIN airport a2 ON r.arr_code=a2.code_id WHERE f.dept_date=? AND a1.city=? AND a2.city=? AND f.seats_left>=?;";
+
+    mysqlConnection.query(query,[date,dept,arr,pcount], (err, flights, fields) => {
+        if (!err){
+            if(flights.length==0){
+                res.redirect("noflights");
+            }else{
+                flightsfound=flights;
+                flightsfound.forEach((flight)=>flight_dur.push(time_diff (flight.arr_time, flight.dept_time)));
+                res.redirect("flights");
+            }
+        }
+            else
+            console.log(err);
+    });
+
+});
+
+//restict user from direct url entering 
+permittedLinker = ['localhost', '127.0.0.1'];  // who can link here?
+
+app.use(function(req, res, next) {
+  var i=0, notFound=1, referer=req.get('Referer');
+
+  if ((req.path==='/') || (req.path==='')) next(); // pass calls to '/' always
+
+  if (referer){
+      while ((i<permittedLinker.length) && notFound){
+      notFound= (referer.indexOf(permittedLinker[i])===-1);
+      i++;
+      }
+  }
+
+  if (notFound) { 
+     res.status(403).send('Protected area. Please enter website through "search page"');
+  } else {
+    next(); // access is permitted, go to the next step in the ordinary routing
+  }
+});
 
 app.get("/addairport",function(req,res){
     setTimeout((() => {
@@ -424,61 +446,36 @@ app.get("/plist", function(req, res){
     res.render("plist", {plistres:plistres});
 })
 
-app.get("/search", function(req, res){
-    if(user_id===undefined){
-        res.redirect("login");
-    }else{
-    setTimeout((() => {
-        res.render("search", {destinationsfound:destinationsfound, user_id:user_id, user_name: user_name});
-    }), 2000);}
+app.get("/booking", function(req, res){
+    bookingsoutput=[], ticketsoutput=[];
+    var bookingquery = "select * from booking where user_id =?;";
+    
+    mysqlConnection.query(bookingquery,[user_id], (err, bookingres, fields) => {
+        if (!err){
+            for(var i=0; i<bookingres.length; i++){
+                bookingsoutput.push(bookingres[i]);
+                var ticketsquery = "select name, dept_time, dept_date, dept_code, arr_code, t.ticket_id, f.route_id, f.flight_id, seat_no, b.booking_timestamp from booking b, ticket t, passenger p, flight f, route r where user_id=? and f.flight_id=t.flight_id and b.booking_id=? and b.booking_id=t.booking_id and f.route_id=r.route_id and p.ticket_id=t.ticket_id;";
+                mysqlConnection.query(ticketsquery,[user_id,bookingres[i].booking_id], (err, ticketsres, fields) => {
+                    if (!err){
+                        ticketsoutput.push(ticketsres);
+                    }else
+                    console.log(err);
+                });
+                if(ticketsoutput!==undefined){
+                }
+            }
+            res.redirect("tickets");
+        }else
+        console.log(err);
+    });
 })
 
-app.post("/search", function(req, res){
-    const dept = req.body.dept;
-    const arr = req.body.arr;
-    const date = req.body.date;
-    pcount = req.body.pcount;
-    const query = "SELECT DISTINCT flight_id, fare, dept_date, dept_code, arr_code, dept_time, arr_time, a1.city as dept_city, a1.name as dept_name, a2.city as arr_city, a2.name as arr_name FROM route r INNER JOIN flight f ON f.route_id=r.route_id INNER JOIN airport a1 ON r.dept_code=a1.code_id INNER JOIN airport a2 ON r.arr_code=a2.code_id WHERE f.dept_date=? AND a1.city=? AND a2.city=? AND f.seats_left>=?;";
-
-    mysqlConnection.query(query,[date,dept,arr,pcount], (err, flights, fields) => {
-        if (!err){
-            if(flights.length==0){
-                res.redirect("noflights");
-            }else{
-                flightsfound=flights;
-                flightsfound.forEach((flight)=>flight_dur.push(time_diff (flight.arr_time, flight.dept_time)));
-                res.redirect("flights");
-            }
-        }
-            else
-            console.log(err);
-    });
-
+app.get("/tickets", function(req, res){
+    setTimeout((() => {
+        res.render("tickets", {bookingsoutput: bookingsoutput, ticketsoutput: ticketsoutput, user_id:user_id, user_name: user_name});
+    }), 1500)
 });
 
-//restict user from direct url entering 
-// permittedLinker = ['localhost', '127.0.0.1'];  // who can link here?
-
-// app.use(function(req, res, next) {
-//   var i=0, notFound=1, referer=req.get('Referer');
-
-//   if ((req.path==='/') || (req.path==='')) next(); // pass calls to '/' always
-
-//   if (referer){
-//       while ((i<permittedLinker.length) && notFound){
-//       notFound= (referer.indexOf(permittedLinker[i])===-1);
-//       i++;
-//       }
-//   }
-
-//   if (notFound) { 
-//      res.status(403).send('Protected area. Please enter website through "search page"');
-//   } else {
-//     next(); // access is permitted, go to the next step in the ordinary routing
-//   }
-// });
-
-//
 
 app.get("/noflights", function(req, res){
     res.render("noflights");
