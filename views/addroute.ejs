@@ -66,7 +66,6 @@
         <%}%>
         </tbody>
       </table>
-<<<<<<< HEAD
       <br>
       <br>
       <div class="d-flex justify-content-center">
@@ -101,32 +100,3 @@
             </html>
             <%- include('partials/footer') %>
             
-=======
-      <div class="container-fluid">
-        <form method="POST">
-            <p><select type="text" id="airport1" placeholder="Departure" name="airport_dept" maxlength="3" style="text-transform: uppercase;width: 15rem;" onchange="updateSelect(this,'airport2')" > 
-                    <option value="">Select a Departure Location...</option>
-                                                    <% for (var i = 0; i < allairports.length; i++) { %>
-                                                        
-                                                        <option>
-                                                           <%= allairports[i].code_id %>, <%= allairports[i].city %>
-                                                        </option>
-                                                        <% } %>
-                 </select></p>
-
-            <p><select type="text" id="airport2" placeholder="Arrival" name="airport_arr" maxlength="3" style="text-transform: uppercase;width: 15rem;"  onchange="updateSelect(this,'airport1')" > 
-                     <option value="">Select a Arrival location...</option>
-                            <% for (var i = 0; i < allairports.length; i++) { %>
-                
-                                    <option>
-                                            <%= allairports[i].code_id %>, <%= allairports[i].city %>
-                                    </option>
-                            <% } %>
-            </select></p>
-            <button type="submit" id="portsubmit" name="portsubmit" class="btn btn-primary">ADD ROUTE</button>
-        </form>
-    </div>
-</body>
-</html>
-<%- include('partials/footer') %>
->>>>>>> f57bfc8ddc9d06725cfb1a4f6c6b5a2beb0084d2
